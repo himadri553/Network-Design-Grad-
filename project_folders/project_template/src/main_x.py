@@ -1,8 +1,9 @@
 """
     Himadri Saha
 
-    project_x.py
+    main_x.py
         - Main entry to this project, run this file to run the project
+        - Prompts user to select secnario
 
 """
 
