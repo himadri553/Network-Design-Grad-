@@ -6,7 +6,7 @@
         - Prompts user to select scenario
 
     TODO:
-        - Make it so that the echo message actually goes back to the sender
+        
 
 """
 
@@ -34,7 +34,7 @@ def main():
     
     # Create sender and receiver threads
     rx = RECEIVER_1(buffer_size, receiver_port)
-    tx = SENDER_1(receiver_name, receiver_port)
+    tx = SENDER_1(receiver_name, receiver_port, buffer_size)
     rx_thread = threading.Thread(target=rx.rx_run)
     tx_thread = threading.Thread(target=tx.tx_run)
 
@@ -45,7 +45,7 @@ def main():
     tx_thread.start()
     rx_thread.join()
     tx_thread.join()
-    main1_helper.main_log_print("Both thread completed")
+    main1_helper.main_log_print("Both threads complete")
 
 if __name__ == "__main__":
     main()

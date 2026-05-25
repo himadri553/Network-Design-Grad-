@@ -1,8 +1,9 @@
-[MAIN]: Clearing all output logs
-[MAIN]: Starting tx and rx threads
-[RECEIVER]: Receiver is up and running
-[SENDER]: Sender is up and running
-[SENDER]: sending HELLO over UDP...
-[SENDER]: sent message, waiting for ECHO message from receiver...
-[RECEIVER]: received a message: b'HELLO'
-[MAIN]: Both thread completed
+[MAIN] Clearing all output logs
+[MAIN] Starting tx and rx threads
+[RECEIVER] Receiver is up and running
+[SENDER] Sender is up and running
+[SENDER] sending HELLO over UDP...
+[SENDER] sent message, waiting for ECHO message from receiver...
+[RECEIVER] received a message: HELLO
+[SENDER] Echo Message: HELLO
+[MAIN] Both threads complete

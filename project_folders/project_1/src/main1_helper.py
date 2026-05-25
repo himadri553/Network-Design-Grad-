@@ -17,4 +17,4 @@ log_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.
 def main_log_print(message):
     # Writes a message to the output log
     with open(log_path, 'a') as log_file:
-        log_file.write(f"[MAIN]: {message}\n")
+        log_file.write(f"[MAIN] {message}\n")
