@@ -36,21 +36,7 @@ class SENDER_1:
             self.log_print("Error: no response from receiver (timed out)")
             return None
 
-
     def log_print(self, message):
         # Writes a message to the output log
         with open(self.log_path, 'a') as log_file:
             log_file.write(f"[SENDER] {message}\n")
-
-    def tx_run(self):
-        # Initial message
-        self.log_print("Sender is up and running")
-
-        # Send HELLO to rx
-        self.log_print("sending HELLO over UDP...")
-        self.tx_send("HELLO")
-        self.log_print("sent message, waiting for ECHO message from receiver...")
-
-        # Wait for rx to echo a message back
-        echo_message = self.tx_receive()
-        self.log_print(f"Echo Message: {echo_message}") 

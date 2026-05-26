@@ -38,17 +38,3 @@ class RECEIVER_1:
         with open(self.log_path, 'a') as log_file:
             log_file.write(f"[RECEIVER] {message}\n")
 
-    def rx_run(self):
-        # Initial message 
-        self.log_print("Receiver is up and running")
-
-        # Log message received
-        received_message = self.rx_receive()
-        self.log_print(f"received a message: {received_message}")
-
-        # Echo back the message
-        self.rx_send(received_message)
-
-
-
-
