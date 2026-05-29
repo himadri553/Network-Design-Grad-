@@ -1,0 +1,9 @@
+[MAIN] Clearing all output logs
+[MAIN] Starting tx and rx threads for Phase 2 - Scenario 1
+[RECEIVER] RX is up and running, Scenario 1
+[RECEIVER] Waiting for a message...
+[SENDER] Sender is up and running: Scenario 1
+[SENDER] Saying hello
+[RECEIVER] Got this message: HELLO
+[SENDER] Echo Message: HELLO
+[MAIN] Both threads complete
