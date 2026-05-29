@@ -3,9 +3,10 @@
 
     main_2.py
         - Main entry to this project, run this file to run the project
+        - Chunk refers to picture data broken down into size main2_helper.packet_size
+        - Packet is the data sent from the sender with all the headers and stuff
 
     TODO:
-        - Set up sockets and connection
         - Create make_packet function (tx)
         - Create build_image function (rx) to output image
         - Implement sequence numbers and other packet headers
@@ -25,7 +26,7 @@ import main2_helper
 
 """ Entry """
 def main():
-    # Clear output logs
+    # Clear output files
     with open(main2_helper.log_path, 'w') as log_file:
         pass
     main2_helper.main_log_print("Clearing all output logs")

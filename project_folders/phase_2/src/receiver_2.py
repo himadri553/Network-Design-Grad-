@@ -15,6 +15,9 @@ import main2_helper
 
 class RECEIVER_2:
     def __init__(self):
+        # Self Vars
+        self.full_pic = []
+
         # Setup sockets 
         self.rx_socket = socket(AF_INET, SOCK_DGRAM)
         self.rx_socket.bind(('localhost', main2_helper.receiver_port))
@@ -25,6 +28,25 @@ class RECEIVER_2:
             log_file.write(f"[RECEIVER] {message}\n")
 
     """ Helper Functions """
+    def extract(self, packet):
+        # Extract all parts of the packet
+        seq      = packet[0]
+        checksum = packet[1]
+        length   = int.from_bytes(packet[2:6], byteorder='big')
+        data     = packet[6:6 + length]
+
+        return seq, checksum, length, data
+
+    def corrupt(self, packet):
+        # Check to see if packet is corrupted. Returns True if corrupted
+        _, checksum, _, data = self.extract(packet)
+        return sum(data) % 256 != checksum
+
+    def reconstruct_image(self, pic_data):
+        # Concatenate all chunks and write to file
+        full_data = b''.join(pic_data)
+        with open (main2_helper.output_pic_path, "wb") as f:
+            f.write(full_data)
 
     """ Connection functions """
     def rx_receive(self):
@@ -33,19 +55,38 @@ class RECEIVER_2:
         self.rx_socket.settimeout(5)
         try:
             rx_data, self.sender_address = self.rx_socket.recvfrom(main2_helper.buffer_size)
-            return rx_data.decode()
+            self.log_print("Received something")
+            return rx_data
         except:
-            self.log_print("Error: no response from sender (timed out)")
+            self.log_print("Error: no response from sender (5 sec time out)")
             return None
     
     def rx_send(self, data):
         # Send a message to the SAME place the last message came from
-        self.rx_socket.sendto(data.encode(), self.sender_address)
+        self.rx_socket.sendto(data, self.sender_address)
 
     """ Runner Functions for each Scenario """
     def run_rx_sc1(self):
-        self.log_print("RX is up and running, Scenario 1")
-        self.log_print("Waiting for a message...")
-        received_message = self.rx_receive()
-        self.log_print(f"Got this message: {received_message}")
-        self.rx_send(received_message)
+        # Receive all packets and reconstruct image
+        
+        while True:
+            # Listen for packets until there is none left
+            rx_data = self.rx_receive()
+            if rx_data is None:
+                self.log_print("No more packets, reconstructing image")
+                break
+            
+            # Print out packet headers
+            seq, checksum, length, data = self.extract(rx_data)
+            self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
+
+            # Check if packet is corrupted
+            if self.corrupt(rx_data):
+                self.log_print("Packet corrupted, discarding")
+            else:
+                # Add to final image
+                self.full_pic.append(data)
+            
+        # Reconstruct Image
+        self.reconstruct_image(self.full_pic)
+        self.log_print("Image successfully reconstructed")
