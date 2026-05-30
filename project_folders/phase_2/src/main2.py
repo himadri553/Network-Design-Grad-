@@ -7,9 +7,7 @@
         - Packet is the data sent from the sender with all the headers and stuff
 
     TODO:
-        - Create make_packet function (tx)
-        - Create build_image function (rx) to output image
-        - Implement sequence numbers and other packet headers
+        - Fix issue with image reconstruction from RX side (stuck!)
 
 """
 
@@ -21,8 +19,6 @@ import os
 from sender_2 import SENDER_2
 from receiver_2 import RECEIVER_2
 import main2_helper
-
-""" Vars """
 
 """ Entry """
 def main():

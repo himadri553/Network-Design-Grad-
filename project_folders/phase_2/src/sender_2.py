@@ -44,11 +44,14 @@ class SENDER_2:
         # Alternate seq number
         self.seq = 1 - self.seq
 
-        # Create checksum number and length
-        checksum = sum(data) % 256
+        # Create length
         length = len(data)
 
-        # Return a full packet
+        # Create header without checksum first, then get checksum over header + data
+        header_no_checksum = bytes([self.seq]) + length.to_bytes(4, byteorder='big')
+        checksum = (sum(header_no_checksum) + sum(data)) % 256
+
+        # Return a full packet with checksum inserted
         header = bytes([self.seq, checksum]) + length.to_bytes(4, byteorder='big')
         packet = header + data
         return packet

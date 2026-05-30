@@ -17,6 +17,7 @@ class RECEIVER_2:
     def __init__(self):
         # Self Vars
         self.full_pic = []
+        self.expected_seq = 0
 
         # Setup sockets 
         self.rx_socket = socket(AF_INET, SOCK_DGRAM)
@@ -39,8 +40,11 @@ class RECEIVER_2:
 
     def corrupt(self, packet):
         # Check to see if packet is corrupted. Returns True if corrupted
-        _, checksum, _, data = self.extract(packet)
-        return sum(data) % 256 != checksum
+        seq, checksum, length, data = self.extract(packet)
+        # Calculate checksum over header + data
+        header_no_checksum = bytes([seq]) + length.to_bytes(4, byteorder='big')
+        recalculated_checksum = (sum(header_no_checksum) + sum(data)) % 256
+        return recalculated_checksum != checksum
 
     def reconstruct_image(self, pic_data):
         # Concatenate all chunks and write to file
@@ -68,24 +72,30 @@ class RECEIVER_2:
     """ Runner Functions for each Scenario """
     def run_rx_sc1(self):
         # Receive all packets and reconstruct image
-        
         while True:
-            # Listen for packets until there is none left
+            # Keep listening for packets until there is none left
             rx_data = self.rx_receive()
             if rx_data is None:
                 self.log_print("No more packets, reconstructing image")
                 break
             
-            # Print out packet headers
+            # Extract Packet headers
             seq, checksum, length, data = self.extract(rx_data)
             self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
 
-            # Check if packet is corrupted
+            # Check if packet is corrupted, or out of order
             if self.corrupt(rx_data):
                 self.log_print("Packet corrupted, discarding")
+            elif seq != self.expected_seq:
+                self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
+            
+            # Valid packet
             else:
                 # Add to final image
                 self.full_pic.append(data)
+
+                # Update seq number
+                self.expected_seq = 1 - self.expected_seq
             
         # Reconstruct Image
         self.reconstruct_image(self.full_pic)
