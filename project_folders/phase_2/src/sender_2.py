@@ -63,6 +63,7 @@ class SENDER_2:
     def tx_send(self, data):
         # Transmits data over UDP
         self.sender_socket.sendto(data, (main2_helper.receiver_name, main2_helper.receiver_port))
+        time.sleep(0.001)
 
     def tx_receive(self):
         # Listen for and return message from receiver
@@ -84,4 +85,3 @@ class SENDER_2:
         for i in range(len(self.all_chunks)):
             test_packet = self.create_data_packet(self.all_chunks[i])
             self.tx_send(test_packet)
-            
