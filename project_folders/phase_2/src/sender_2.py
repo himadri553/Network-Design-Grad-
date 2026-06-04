@@ -56,8 +56,18 @@ class SENDER_2:
         packet = header + data
         return packet
     
-    def create_ack_packet(self):
-        pass
+    def extract_ack(self, ack_packet):
+        # Extract ACK packet and validate checksum
+        # ACK packet format: [seq_ack(1B)][checksum(1B)][reserved(4B)]
+        seq_ack = ack_packet[0]
+        checksum = ack_packet[1]
+        
+        # Validate checksum
+        header_no_checksum = bytes([seq_ack]) + bytes(4)
+        recalculated_checksum = sum(header_no_checksum) % 256
+        
+        # Return True if valid ACK, False otherwise
+        return recalculated_checksum == checksum
 
     """ Connection functions """
     def tx_send(self, data):
@@ -80,8 +90,27 @@ class SENDER_2:
         # Break down picture into packets
         self.pic_to_chunks()
 
-        # Send all chunks
-        self.log_print("Sending 5 chunks to the receiver")
+        self.log_print("Sending chunks to the receiver")
         for i in range(len(self.all_chunks)):
-            test_packet = self.create_data_packet(self.all_chunks[i])
-            self.tx_send(test_packet)
+            retry_count = 0
+            
+            while retry_count < 5:
+                # Send a chunk as a packet
+                tx_packet = self.create_data_packet(self.all_chunks[i])
+                self.tx_send(tx_packet)
+
+                # Handle ACK
+                ack_packet = self.tx_receive()
+                if ack_packet is not None and self.extract_ack(ack_packet):
+                    # Valid ACK
+                    self.log_print("Valid ACK received")
+                    break
+                else:
+                    # Invalid/timeout - retry same chunk
+                    retry_count += 1
+                    if retry_count < 5:
+                        self.log_print(f"Retransmitting chunk {i} (attempt {retry_count})")
+                    else:
+                        # Give up on this chunk
+                        self.log_print(f"Max retries exceeded for chunk {i}")
+                        break  

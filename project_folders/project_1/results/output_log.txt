@@ -1,5 +1,5 @@
 [MAIN] Clearing all output logs
-[MAIN] Starting tx and rx threads for Phase 2 - Scenario 1
+[MAIN] Starting tx and rx threads for Phase 1b
 [SENDER] Sending 5 chunks to the receiver
 [RECEIVER] Received something
 [RECEIVER] Seq: 1, Checksum: 158, Length: 1024

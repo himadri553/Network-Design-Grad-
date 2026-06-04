@@ -52,6 +52,13 @@ class RECEIVER_2:
         with open (main2_helper.output_pic_path, "wb") as f:
             f.write(full_data)
 
+    def create_ack_packet(self, seq_ack):
+        # Create ACK packet: [seq_ack(1B)][checksum(1B)][reserved(4B)]
+        header_no_checksum = bytes([seq_ack]) + bytes(4)
+        checksum = sum(header_no_checksum) % 256
+        ack_packet = bytes([seq_ack, checksum]) + bytes(4)
+        return ack_packet
+
     """ Connection functions """
     def rx_receive(self):
         # Wait and get message from sender
@@ -98,6 +105,11 @@ class RECEIVER_2:
 
             # Update seq number
             self.expected_seq = 1 - self.expected_seq
+
+            # Send an ACK packet
+            ack_packet = self.create_ack_packet(seq)
+            self.rx_send(ack_packet)
+            self.log_print(f"Sent ACK for seq {seq}")
             
         # Reconstruct Image
         self.reconstruct_image(self.full_pic)

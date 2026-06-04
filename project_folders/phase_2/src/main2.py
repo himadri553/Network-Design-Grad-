@@ -9,7 +9,6 @@
     TODO:
         - Implement rest of RDT 2.2 logic
             - 
-            - ACK
         - Add things to the log - plot log messages
         - Create plots based on time stamp
 
