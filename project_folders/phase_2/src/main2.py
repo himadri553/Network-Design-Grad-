@@ -7,8 +7,8 @@
         - Packet is the data sent from the sender with all the headers
 
     TODO:
-        - Implement rest of RDT 2.2 logic
-            - 
+        - Fix corrupt and out of seq checks on rx
+            - Seq check is breaking things, might be an issue with how tx is extracting ack packets
         - Add things to the log - plot log messages
         - Create plots based on time stamp
 

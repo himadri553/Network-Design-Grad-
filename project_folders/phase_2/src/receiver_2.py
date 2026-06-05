@@ -89,27 +89,30 @@ class RECEIVER_2:
             # Extract Packet headers
             seq, checksum, length, data = self.extract(rx_data)
             self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
-
-            # Check if packet is corrupted, or out of order
-            '''
-            if self.corrupt(rx_data):
-                self.log_print("Packet corrupted, discarding")
-            elif seq != self.expected_seq:
-                self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
-            # Valid packet
-            else:
-            '''
             
-            # Add to final image
-            self.full_pic.append(data)
+            ## Check for invalid packets
+            if self.corrupt(rx_data):
+                self.log_print("Packet corrupted, discarding. Sending ACk for last good seq")
+                ack_packet = self.create_ack_packet(1 - self.expected_seq)
+                self.rx_send(ack_packet)
+            
+            elif seq != self.expected_seq:
+                self.log_print("Out of order packet, discarding. Sending ACk for last good seq")
+                ack_packet = self.create_ack_packet(1 - self.expected_seq)
+                self.rx_send(ack_packet)
+            
+            ## Valid Packet received
+            else:
+                # Add to final image
+                self.full_pic.append(data)
 
-            # Update seq number
-            self.expected_seq = 1 - self.expected_seq
+                # Update seq number
+                self.expected_seq = 1 - self.expected_seq
 
-            # Send an ACK packet
-            ack_packet = self.create_ack_packet(seq)
-            self.rx_send(ack_packet)
-            self.log_print(f"Sent ACK for seq {seq}")
+                # Send an ACK packet
+                ack_packet = self.create_ack_packet(seq)
+                self.rx_send(ack_packet)
+                self.log_print(f"Sent ACK for seq {seq}")
             
         # Reconstruct Image
         self.reconstruct_image(self.full_pic)

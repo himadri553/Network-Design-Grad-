@@ -56,7 +56,7 @@ class SENDER_2:
         packet = header + data
         return packet
     
-    def extract_ack(self, ack_packet):
+    def extract_ack(self, ack_packet, expected_seq):
         # Extract ACK packet and validate checksum
         # ACK packet format: [seq_ack(1B)][checksum(1B)][reserved(4B)]
         seq_ack = ack_packet[0]
@@ -67,7 +67,7 @@ class SENDER_2:
         recalculated_checksum = sum(header_no_checksum) % 256
         
         # Return True if valid ACK, False otherwise
-        return recalculated_checksum == checksum
+        return (recalculated_checksum == checksum) and (seq_ack == expected_seq)
 
     """ Connection functions """
     def tx_send(self, data):
@@ -93,7 +93,7 @@ class SENDER_2:
         self.log_print("Sending chunks to the receiver")
         for i in range(len(self.all_chunks)):
             retry_count = 0
-            
+
             while retry_count < 5:
                 # Send a chunk as a packet
                 tx_packet = self.create_data_packet(self.all_chunks[i])
@@ -101,7 +101,7 @@ class SENDER_2:
 
                 # Handle ACK
                 ack_packet = self.tx_receive()
-                if ack_packet is not None and self.extract_ack(ack_packet):
+                if ack_packet is not None and self.extract_ack(ack_packet, self.seq):
                     # Valid ACK
                     self.log_print("Valid ACK received")
                     break
