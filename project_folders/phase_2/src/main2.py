@@ -21,27 +21,29 @@ import time
 import os
 from sender_2 import SENDER_2
 from receiver_2 import RECEIVER_2
-import main2_helper
+import helper
 
 """ Entry """
 def main():
     # Clear output files
-    with open(main2_helper.log_path, 'w') as log_file:
+    with open(helper.log_path, 'w') as log_file:
         pass
-    main2_helper.main_log_print("Clearing all output logs")
+    helper.main_log_print("Clearing all output logs")
 
     # Run Scenario 1 - No loss/bit-errors
     tx = SENDER_2()
     rx = RECEIVER_2()
     tx_thread_sc1 = threading.Thread(target=tx.run_tx_sc1)
     rx_thread_sc1 = threading.Thread(target=rx.run_rx_sc1)
-    main2_helper.main_log_print("Phase 2: Starting Scenario 1 - No loss/bit-errors")
+    helper.main_log_print(f"[PLOT] TX_START sc=1 @ {time.time()}")
+    helper.main_log_print("Phase 2: Starting Scenario 1 - No loss/bit-errors")
     rx_thread_sc1.start()
     time.sleep(0.5)
     tx_thread_sc1.start()
     rx_thread_sc1.join()
     tx_thread_sc1.join()
-    main2_helper.main_log_print("Both threads complete")
+    helper.main_log_print(f"[PLOT] TX_END sc=1 @ {time.time()}")
+    helper.main_log_print("Both threads complete")
 
     # Run Scenario 2 - ACK packet bit-error
 

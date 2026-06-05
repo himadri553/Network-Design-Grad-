@@ -11,7 +11,7 @@
 import threading
 from socket import *
 import os
-import main2_helper
+import helper
 
 class RECEIVER_2:
     def __init__(self):
@@ -21,11 +21,11 @@ class RECEIVER_2:
 
         # Setup sockets 
         self.rx_socket = socket(AF_INET, SOCK_DGRAM)
-        self.rx_socket.bind(('localhost', main2_helper.receiver_port))
+        self.rx_socket.bind(('localhost', helper.receiver_port))
 
     def log_print(self, message):
         # Writes a message to the output log
-        with open(main2_helper.log_path, 'a') as log_file:
+        with open(helper.log_path, 'a') as log_file:
             log_file.write(f"[RECEIVER] {message}\n")
 
     """ Helper Functions """
@@ -49,15 +49,8 @@ class RECEIVER_2:
     def reconstruct_image(self, pic_data):
         # Concatenate all chunks and write to file
         full_data = b''.join(pic_data)
-        with open (main2_helper.output_pic_path, "wb") as f:
+        with open (helper.output_pic_path, "wb") as f:
             f.write(full_data)
-
-    def create_ack_packet(self, seq_ack):
-        # Create ACK packet: [seq_ack(1B)][checksum(1B)][reserved(4B)]
-        header_no_checksum = bytes([seq_ack]) + bytes(4)
-        checksum = sum(header_no_checksum) % 256
-        ack_packet = bytes([seq_ack, checksum]) + bytes(4)
-        return ack_packet
 
     """ Connection functions """
     def rx_receive(self):
@@ -65,7 +58,7 @@ class RECEIVER_2:
         # Current implementation assumes sender_address will be the same address for the rx to send back to
         self.rx_socket.settimeout(5)
         try:
-            rx_data, self.sender_address = self.rx_socket.recvfrom(main2_helper.buffer_size)
+            rx_data, self.sender_address = self.rx_socket.recvfrom(helper.buffer_size)
             self.log_print("Received something")
             return rx_data
         except:
@@ -89,30 +82,22 @@ class RECEIVER_2:
             # Extract Packet headers
             seq, checksum, length, data = self.extract(rx_data)
             self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
-            
-            ## Check for invalid packets
+
+            # Check if packet is corrupted, or out of order
+            '''
             if self.corrupt(rx_data):
-                self.log_print("Packet corrupted, discarding. Sending ACk for last good seq")
-                ack_packet = self.create_ack_packet(1 - self.expected_seq)
-                self.rx_send(ack_packet)
-            
+                self.log_print("Packet corrupted, discarding")
             elif seq != self.expected_seq:
-                self.log_print("Out of order packet, discarding. Sending ACk for last good seq")
-                ack_packet = self.create_ack_packet(1 - self.expected_seq)
-                self.rx_send(ack_packet)
-            
-            ## Valid Packet received
+                self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
+            # Valid packet
             else:
-                # Add to final image
-                self.full_pic.append(data)
+            '''
+            
+            # Add to final image
+            self.full_pic.append(data)
 
-                # Update seq number
-                self.expected_seq = 1 - self.expected_seq
-
-                # Send an ACK packet
-                ack_packet = self.create_ack_packet(seq)
-                self.rx_send(ack_packet)
-                self.log_print(f"Sent ACK for seq {seq}")
+            # Update seq number
+            self.expected_seq = 1 - self.expected_seq
             
         # Reconstruct Image
         self.reconstruct_image(self.full_pic)
