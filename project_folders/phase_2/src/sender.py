@@ -41,9 +41,6 @@ class SENDER:
                 self.all_chunks.append(chunk)
 
     def create_data_packet(self, data):
-        # Alternate seq number
-        self.seq = 1 - self.seq
-
         # Create length
         length = len(data)
 
@@ -54,6 +51,10 @@ class SENDER:
         # Return a full packet with checksum inserted
         header = bytes([self.seq, checksum]) + length.to_bytes(4, byteorder='big')
         packet = header + data
+
+        # Alternate seq number
+        self.seq = 1 - self.seq
+
         return packet
     
     def create_ack_packet(self):

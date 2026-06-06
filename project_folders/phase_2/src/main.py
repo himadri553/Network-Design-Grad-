@@ -6,10 +6,9 @@
         - Chunk refers to picture data broken down into size helper.packet_size
         - Packet is the data sent from the sender with all the headers
 
-    TODO:
+    Phase 2 Tasks:
         - Protocol Implementation: 
-            - Use sequence numbers to detect duplicates.
-            - Implement a checksum for error detection on DATA and ACK packets.
+            - Implement a checksum for error detection on DATA and ACK packets. (corrupt packets)
             - Implement ACK-based recovery (RDT 2.2 is NAK-free).
             - Sender and receiver behavior must match the RDT 2.2 sender/receiver FSM semantics
         - Verify Image reconstruction
@@ -21,6 +20,8 @@
             - y-axis: completion time in seconds (average of runs)
         - Deliverables 
             - Demo Video
+
+    TODO:
 
 """
 

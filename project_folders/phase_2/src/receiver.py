@@ -83,21 +83,18 @@ class RECEIVER:
             seq, checksum, length, data = self.extract(rx_data)
             self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
 
-            # Check if packet is corrupted, or out of order
-            '''
-            if self.corrupt(rx_data):
-                self.log_print("Packet corrupted, discarding")
-            elif seq != self.expected_seq:
+            ## Cases where a packet is invalid
+            # Out of order - Discard packet
+            if seq != self.expected_seq:
                 self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
-            # Valid packet
-            else:
-            '''
             
-            # Add to final image
-            self.full_pic.append(data)
+            ## Valid packet
+            else:
+                # Add to final image
+                self.full_pic.append(data)
 
-            # Update seq number
-            self.expected_seq = 1 - self.expected_seq
+                # Update seq number
+                self.expected_seq = 1 - self.expected_seq
             
         # Reconstruct Image
         self.reconstruct_image(self.full_pic)
