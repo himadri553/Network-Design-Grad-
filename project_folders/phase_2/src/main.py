@@ -7,10 +7,22 @@
         - Packet is the data sent from the sender with all the headers
 
     TODO:
-        - Fix corrupt and out of seq checks on rx
-            - Seq check is breaking things, might be an issue with how tx is extracting ack packets
-        - Add things to the log - plot log messages
-        - Create plots based on time stamp
+        - Protocol Implementation: 
+            - Use sequence numbers to detect duplicates.
+            - Implement a checksum for error detection on DATA and ACK packets.
+            - Implement ACK-based recovery (RDT 2.2 is NAK-free).
+            - Sender and receiver behavior must match the RDT 2.2 sender/receiver FSM semantics
+        - Image reconstruction
+            - Receiver must reassemble packets in order and deliver the full file to the application
+        - Scenarios
+            - 2. ACK packet bit-error injection at the sender-side receive path (and correct recovery)
+            - 3. DATA packet bit-error injection at the receiver-side receive path (and correct recovery
+        - Plots
+            - x-axis: loss/error rate (%)
+            - y-axis: completion time in seconds (average of runs)
+        - Deliverables 
+            - README on how to run
+            - Demo Video
 
 """
 
