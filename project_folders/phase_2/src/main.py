@@ -21,7 +21,6 @@
             - x-axis: loss/error rate (%)
             - y-axis: completion time in seconds (average of runs)
         - Deliverables 
-            - README on how to run
             - Demo Video
 
 """
