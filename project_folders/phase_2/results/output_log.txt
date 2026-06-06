@@ -1,5 +1,5 @@
 [MAIN] Clearing all output logs
-[MAIN] [PLOT] TX_START sc=1 @ 1780691694.5152764
+[MAIN] [PLOT] TX_START sc=1 @ 1780754802.72009
 [MAIN] Phase 2: Starting Scenario 1 - No loss/bit-errors
 [SENDER] Sending 5 chunks to the receiver
 [RECEIVER] Received something
@@ -122407,26 +122407,6 @@
 [RECEIVER] Received something
 [RECEIVER] Seq: 0, Checksum: 78, Length: 1024
 [RECEIVER] Received something
-[RECEIVER] Seq: 1, Checksum: 139, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 0, Checksum: 206, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 1, Checksum: 178, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 0, Checksum: 188, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 1, Checksum: 232, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 0, Checksum: 178, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 1, Checksum: 153, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 0, Checksum: 104, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 1, Checksum: 208, Length: 1024
-[RECEIVER] Received something
-[RECEIVER] Seq: 0, Checksum: 27, Length: 1024
-[RECEIVER] Received something
 [RECEIVER] Seq: 1, Checksum: 136, Length: 1024
 [RECEIVER] Received something
 [RECEIVER] Seq: 0, Checksum: 4, Length: 1024
@@ -140631,5 +140611,5 @@
 [RECEIVER] Error: no response from sender (5 sec time out)
 [RECEIVER] No more packets, reconstructing image
 [RECEIVER] Image successfully reconstructed
-[MAIN] [PLOT] TX_END sc=1 @ 1780691790.6145961
+[MAIN] [PLOT] TX_END sc=1 @ 1780754903.0648844
 [MAIN] Both threads complete

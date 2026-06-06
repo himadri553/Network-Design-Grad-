@@ -1,7 +1,7 @@
 """
     Himadri Saha
 
-    main2_helper.py
+    helper.py
         - Contains helper functions that is used by main
 
     TODO:
