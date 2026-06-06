@@ -77,6 +77,7 @@ class SENDER:
             return None
 
     """ Runner Functions for each Scenario """
+    ## Scenario 1: No loss/bit-errors
     def run_tx_sc1(self):
         # Break down picture into packets
         self.pic_to_chunks()

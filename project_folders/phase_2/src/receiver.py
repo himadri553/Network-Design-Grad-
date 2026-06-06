@@ -74,19 +74,23 @@ class RECEIVER:
         # Receive all packets and reconstruct image
         while True:
             # Keep listening for packets until there is none left
-            rx_data = self.rx_receive()
-            if rx_data is None:
+            rx_packet = self.rx_receive()
+            if rx_packet is None:
                 self.log_print("No more packets, reconstructing image")
                 break
             
             # Extract Packet headers
-            seq, checksum, length, data = self.extract(rx_data)
+            seq, checksum, length, data = self.extract(rx_packet)
             self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
 
             ## Cases where a packet is invalid
             # Out of order - Discard packet
             if seq != self.expected_seq:
                 self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
+
+            # Corrupt Packet - Discard packet
+            elif self.corrupt(rx_packet):
+                self.log_print("Corrupt Packet Received")
             
             ## Valid packet
             else:
