@@ -8,7 +8,6 @@
 
     Phase 2 Tasks:
         - Protocol Implementation: 
-            - Implement ACK-based recovery (RDT 2.2 is NAK-free).
             - Sender and receiver behavior must match the RDT 2.2 sender/receiver FSM semantics
         - Verify Image reconstruction
         - Scenarios

@@ -57,8 +57,16 @@ class SENDER:
 
         return packet
     
-    def create_ack_packet(self):
-        pass
+    def valid_ack(self, ack_packet, expected_ack_seq):
+        if ack_packet is None:
+            return False
+        ack_seq  = ack_packet[0]
+        checksum = ack_packet[1]
+        if ack_seq % 256 != checksum:
+            return False
+        if ack_seq != expected_ack_seq:
+            return False
+        return True
 
     """ Connection functions """
     def tx_send(self, data):
@@ -82,8 +90,15 @@ class SENDER:
         # Break down picture into packets
         self.pic_to_chunks()
 
-        # Send all chunks
-        self.log_print("Sending 5 chunks to the receiver")
+        # Transmit Full Image - Retransmit until valid Ack packet is received 
         for i in range(len(self.all_chunks)):
-            test_packet = self.create_data_packet(self.all_chunks[i])
-            self.tx_send(test_packet)
+            packet = self.create_data_packet(self.all_chunks[i])
+            expected_ack_seq = 1 - self.seq
+            while True:
+                # Transmit packet 
+                self.tx_send(packet)
+
+                # Check valid ack 
+                ack_packet = self.tx_receive()
+                if self.valid_ack(ack_packet, expected_ack_seq):
+                    break

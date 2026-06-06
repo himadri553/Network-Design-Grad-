@@ -8,10 +8,9 @@
 """
 
 """ Imports """
-import threading
 from socket import *
-import os
 import helper
+import time
 
 class RECEIVER:
     def __init__(self):
@@ -52,6 +51,10 @@ class RECEIVER:
         with open (helper.output_pic_path, "wb") as f:
             f.write(full_data)
 
+    def create_ack_packet(self, ack_seq):
+        checksum = ack_seq % 256
+        return bytes([ack_seq, checksum])
+
     """ Connection functions """
     def rx_receive(self):
         # Wait and get message from sender
@@ -68,6 +71,7 @@ class RECEIVER:
     def rx_send(self, data):
         # Send a message to the SAME place the last message came from
         self.rx_socket.sendto(data, self.sender_address)
+        time.sleep(0.001)
 
     """ Runner Functions for each Scenario """
     def run_rx_sc1(self):
@@ -83,23 +87,28 @@ class RECEIVER:
             seq, checksum, length, data = self.extract(rx_packet)
             self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
 
-            ## Cases where a packet is invalid
-            # Out of order - Discard packet
+            ## Cases where a packet is invalid - discard and send an ack 
+            # Out of order
             if seq != self.expected_seq:
                 self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
+                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
 
-            # Corrupt Packet - Discard packet
+            # Corrupt Packet
             elif self.corrupt(rx_packet):
                 self.log_print("Corrupt Packet Received")
+                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
             
             ## Valid packet
             else:
                 # Add to final image
                 self.full_pic.append(data)
 
+                # Send an ACK Packet
+                self.rx_send(self.create_ack_packet(seq))
+
                 # Update seq number
                 self.expected_seq = 1 - self.expected_seq
-            
+                
         # Reconstruct Image
         self.reconstruct_image(self.full_pic)
         self.log_print("Image successfully reconstructed")
