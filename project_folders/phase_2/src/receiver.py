@@ -74,11 +74,55 @@ class RECEIVER:
         time.sleep(0.001)
 
     """ Runner Functions for each Scenario """
-    def run_rx(self):
+    def run_rx_sc1(self):
         # Receive all packets and reconstruct image
         while True:
             # Keep listening for packets until there is none left
             rx_packet = self.rx_receive()
+            if rx_packet is None:
+                self.log_print("No more packets, reconstructing image")
+                break
+            
+            # Extract Packet headers
+            seq, checksum, length, data = self.extract(rx_packet)
+            self.log_print(f"Seq: {seq}, Checksum: {checksum}, Length: {length}")
+
+            ## Cases where a packet is invalid - discard and send an ack 
+            # Out of order
+            if seq != self.expected_seq:
+                self.log_print(f"Invalid Packet Received - Out of order (expected {self.expected_seq}, got {seq})")
+                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+
+            # Corrupt Packet
+            elif self.corrupt(rx_packet):
+                self.log_print("Invalid Packet Received - Corrupt")
+                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+            
+            ## Valid packet
+            else:
+                self.log_print("Valid Packet Received")
+                # Add to final image
+                self.full_pic.append(data)
+
+                # Send an ACK Packet
+                self.rx_send(self.create_ack_packet(seq))
+
+                # Update seq number
+                self.expected_seq = 1 - self.expected_seq
+                
+        # Reconstruct Image
+        self.reconstruct_image(self.full_pic)
+        self.log_print("Image successfully reconstructed")
+
+    def run_rx_sc2(self):
+        self.run_rx_sc1()
+
+    def run_rx_sc3(self, error_rate):
+        # Receive all packets and reconstruct image
+        while True:
+            # Keep listening for packets until there is none left
+            rx_packet = self.rx_receive()
+            helper.inject_error(rx_packet, error_rate)
             if rx_packet is None:
                 self.log_print("No more packets, reconstructing image")
                 break

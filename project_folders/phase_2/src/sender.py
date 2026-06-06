@@ -84,18 +84,6 @@ class SENDER:
             return None
 
     """ Runner Functions for each Scenario """
-    def inject_error(self, packet, error_rate):
-        import random
-        if packet is None:
-            return None
-        if random.random() < error_rate:
-            packet = bytearray(packet)
-            byte_index = random.randint(0, len(packet) - 1)
-            bit_index  = random.randint(0, 7)
-            packet[byte_index] ^= (1 << bit_index)
-            return bytes(packet)
-        return packet
-    
     ## Scenario 1: No loss/bit-errors
     def run_tx_sc1(self):
         # Break down picture into packets
@@ -131,8 +119,12 @@ class SENDER:
 
                 # Receive ACK, inject error, then validate
                 ack_packet = self.tx_receive()
-                ack_packet = self.inject_error(ack_packet, error_rate)
+                ack_packet = helper.inject_error(ack_packet, error_rate)
                 if self.valid_ack(ack_packet, expected_ack_seq):
                     break
                 else:
                     self.log_print("Invalid Ack, retransmitting")
+
+    ## Scenario 3: Data packet bit-error
+    def run_tx_sc3(self):
+        self.run_tx_sc1()

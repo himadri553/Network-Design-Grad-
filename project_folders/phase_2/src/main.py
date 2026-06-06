@@ -53,12 +53,13 @@ def main():
     helper.main_log_print("Both threads complete")
     '''
 
+    '''
     # Run Scenario 2 - ACK packet bit-error
     error_rate = 0.5
     tx2 = sender()
     rx2 = receiver()
     tx_thread_sc2 = threading.Thread(target=tx2.run_tx_sc2, args=(error_rate,))
-    rx_thread_sc2 = threading.Thread(target=rx2.run_rx)
+    rx_thread_sc2 = threading.Thread(target=rx2.run_rx_sc2)
     helper.main_log_print(f"[PLOT] TX_START sc=2 @ {time.time()}")
     helper.main_log_print(f"Phase 2: Starting Scenario 2 - ACK bit-error (error_rate={error_rate})")
     rx_thread_sc2.start()
@@ -68,8 +69,23 @@ def main():
     tx_thread_sc2.join()
     helper.main_log_print(f"[PLOT] TX_END sc=2 @ {time.time()}")
     helper.main_log_print("Both threads complete")
+    '''
 
     # Run Scenario 3 - Data packet bit-error
+    error_rate = 0.5
+    tx3 = sender()
+    rx3 = receiver()
+    tx_thread_sc3 = threading.Thread(target=tx3.run_tx_sc3)
+    rx_thread_sc3 = threading.Thread(target=rx3.run_rx_sc3, args=(error_rate,))
+    helper.main_log_print(f"[PLOT] TX_START sc=3 @ {time.time()}")
+    helper.main_log_print(f"Phase 2: Starting Scenario 3 - Data bit-error (error_rate={error_rate})")
+    rx_thread_sc3.start()
+    time.sleep(0.5)
+    tx_thread_sc3.start()
+    rx_thread_sc3.join()
+    tx_thread_sc3.join()
+    helper.main_log_print(f"[PLOT] TX_END sc=3 @ {time.time()}")
+    helper.main_log_print("Both threads complete")
 
 if __name__ == "__main__":
     main()
