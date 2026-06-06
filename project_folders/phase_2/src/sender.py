@@ -9,7 +9,6 @@
 """ Imports """
 from socket import *
 import helper
-import os
 import time
 
 class SENDER:
@@ -102,3 +101,5 @@ class SENDER:
                 ack_packet = self.tx_receive()
                 if self.valid_ack(ack_packet, expected_ack_seq):
                     break
+                else:
+                    self.log_print("Invalid Ack, retransmitting")

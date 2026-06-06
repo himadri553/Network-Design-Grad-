@@ -90,16 +90,17 @@ class RECEIVER:
             ## Cases where a packet is invalid - discard and send an ack 
             # Out of order
             if seq != self.expected_seq:
-                self.log_print(f"Out of order packet (expected {self.expected_seq}, got {seq}), discarding")
+                self.log_print(f"Invalid Packet Received - Out of order (expected {self.expected_seq}, got {seq})")
                 self.rx_send(self.create_ack_packet(1 - self.expected_seq))
 
             # Corrupt Packet
             elif self.corrupt(rx_packet):
-                self.log_print("Corrupt Packet Received")
+                self.log_print("Invalid Packet Received - Corrupt")
                 self.rx_send(self.create_ack_packet(1 - self.expected_seq))
             
             ## Valid packet
             else:
+                self.log_print("Valid Packet Received")
                 # Add to final image
                 self.full_pic.append(data)
 
