@@ -74,7 +74,7 @@ class RECEIVER:
         time.sleep(0.001)
 
     """ Runner Functions for each Scenario """
-    def run_rx_sc1(self):
+    def run_rx(self):
         # Receive all packets and reconstruct image
         while True:
             # Keep listening for packets until there is none left

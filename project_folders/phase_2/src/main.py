@@ -7,11 +7,7 @@
         - Packet is the data sent from the sender with all the headers
 
     Phase 2 Tasks:
-        - Protocol Implementation: 
-            - Sender and receiver behavior must match the RDT 2.2 sender/receiver FSM semantics
-        - Verify Image reconstruction
         - Scenarios
-            - 2. ACK packet bit-error injection at the sender-side receive path (and correct recovery)
             - 3. DATA packet bit-error injection at the receiver-side receive path (and correct recovery
         - Plots
             - x-axis: loss/error rate (%)
@@ -20,6 +16,7 @@
             - Demo Video
 
     TODO:
+        - 2. ACK packet bit-error injection at the sender-side receive path (and correct recovery)
 
 """
 
@@ -39,11 +36,12 @@ def main():
         pass
     helper.main_log_print("Clearing all output logs")
 
+    '''
     # Run Scenario 1 - No loss/bit-errors
     tx = sender()
     rx = receiver()
     tx_thread_sc1 = threading.Thread(target=tx.run_tx_sc1)
-    rx_thread_sc1 = threading.Thread(target=rx.run_rx_sc1)
+    rx_thread_sc1 = threading.Thread(target=rx.run_rx)
     helper.main_log_print(f"[PLOT] TX_START sc=1 @ {time.time()}")
     helper.main_log_print("Phase 2: Starting Scenario 1 - No loss/bit-errors")
     rx_thread_sc1.start()
@@ -53,8 +51,23 @@ def main():
     tx_thread_sc1.join()
     helper.main_log_print(f"[PLOT] TX_END sc=1 @ {time.time()}")
     helper.main_log_print("Both threads complete")
+    '''
 
     # Run Scenario 2 - ACK packet bit-error
+    error_rate = 0.5
+    tx2 = sender()
+    rx2 = receiver()
+    tx_thread_sc2 = threading.Thread(target=tx2.run_tx_sc2, args=(error_rate,))
+    rx_thread_sc2 = threading.Thread(target=rx2.run_rx)
+    helper.main_log_print(f"[PLOT] TX_START sc=2 @ {time.time()}")
+    helper.main_log_print(f"Phase 2: Starting Scenario 2 - ACK bit-error (error_rate={error_rate})")
+    rx_thread_sc2.start()
+    time.sleep(0.5)
+    tx_thread_sc2.start()
+    rx_thread_sc2.join()
+    tx_thread_sc2.join()
+    helper.main_log_print(f"[PLOT] TX_END sc=2 @ {time.time()}")
+    helper.main_log_print("Both threads complete")
 
     # Run Scenario 3 - Data packet bit-error
 
