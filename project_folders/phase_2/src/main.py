@@ -12,8 +12,7 @@
             - Implement a checksum for error detection on DATA and ACK packets.
             - Implement ACK-based recovery (RDT 2.2 is NAK-free).
             - Sender and receiver behavior must match the RDT 2.2 sender/receiver FSM semantics
-        - Image reconstruction
-            - Receiver must reassemble packets in order and deliver the full file to the application
+        - Verify Image reconstruction
         - Scenarios
             - 2. ACK packet bit-error injection at the sender-side receive path (and correct recovery)
             - 3. DATA packet bit-error injection at the receiver-side receive path (and correct recovery
