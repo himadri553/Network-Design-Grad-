@@ -15,5 +15,5 @@ project_folders\phase_2\results\output_pic.bmp
 
 ### View Plots 
 ```bash
-project_folders\phase_2\results\plots\
+project_folders\phase_2\results\plots\finals
 ```
