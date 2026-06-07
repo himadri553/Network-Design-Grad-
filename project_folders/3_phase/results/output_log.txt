@@ -1,0 +1,41 @@
+[MAIN] Clearing all output logs
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780835984.2419553, sc:3, error_rate:0.0, duration:106.8442
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836091.8914442, sc:3, error_rate:0.05, duration:106.6205
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836206.1071842, sc:3, error_rate:0.1, duration:113.1854
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836261.8335602, sc:3, error_rate:0.15, duration:54.6963
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836281.1198208, sc:3, error_rate:0.2, duration:18.2645
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836288.6229103, sc:3, error_rate:0.25, duration:6.4863
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836297.316753, sc:3, error_rate:0.3, duration:7.6784
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836305.2989035, sc:3, error_rate:0.35, duration:6.9669
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836311.8554795, sc:3, error_rate:0.4, duration:5.5408
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836318.596971, sc:3, error_rate:0.45, duration:5.7252
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836324.9659212, sc:3, error_rate:0.5, duration:5.3538
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836331.106393, sc:3, error_rate:0.55, duration:5.1253
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836337.3301768, sc:3, error_rate:0.6, duration:5.2081
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836343.441223, sc:3, error_rate:0.65, duration:5.0954
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836349.605657, sc:3, error_rate:0.7, duration:5.1488
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836355.7224524, sc:3, error_rate:0.75, duration:5.1013
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836361.8385124, sc:3, error_rate:0.8, duration:5.1001
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836367.9404557, sc:3, error_rate:0.85, duration:5.0857
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836374.041793, sc:3, error_rate:0.9, duration:5.0861
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780836380.157557, sc:3, error_rate:0.95, duration:5.0997
