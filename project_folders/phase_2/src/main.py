@@ -68,6 +68,7 @@ def run2(error_rate):
 
 def run3(error_rate):
     # Run Scenario 3 - Data packet bit-error
+    helper.main_log_print("Starting Scenario 3 ")
     tx3 = sender()
     rx3 = receiver()
     tx_thread = threading.Thread(target=tx3.run_tx_sc3)
@@ -99,16 +100,15 @@ def main():
     # run1()
     # plotter.generate_scenario_plot()
 
+    '''
     for error_rate in rates:
         run2(error_rate)
     plotter.generate_scenario_plot()
-
     '''
+
     for error_rate in rates:
         run3(error_rate)
     plotter.generate_scenario_plot()
-    '''
-
-
+    
 if __name__ == "__main__":
-    plotter.generate_scenario_plot()
+    main()
