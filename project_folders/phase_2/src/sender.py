@@ -80,7 +80,6 @@ class SENDER:
             data, rx_address = self.sender_socket.recvfrom(helper.buffer_size)
             return data
         except:
-            self.log_print("Error: no response from receiver (timed out)")
             return None
 
     """ Runner Functions for each Scenario """
@@ -88,11 +87,12 @@ class SENDER:
     def run_tx_sc1(self):
         # Break down picture into packets
         self.pic_to_chunks()
-
+        
         # Transmit Full Image - Retransmit until valid Ack packet is received 
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
+            retries = 0
             while True:
                 # Transmit packet 
                 self.tx_send(packet)
@@ -101,8 +101,10 @@ class SENDER:
                 ack_packet = self.tx_receive()
                 if self.valid_ack(ack_packet, expected_ack_seq):
                     break
+                elif retries < 5:
+                    retries = retries + 1
                 else:
-                    self.log_print("Invalid Ack, retransmitting")
+                    return
 
     ## Scenario 2: ACK packet bit-error
     def run_tx_sc2(self, error_rate):
@@ -122,8 +124,6 @@ class SENDER:
                 ack_packet = helper.inject_error(ack_packet, error_rate)
                 if self.valid_ack(ack_packet, expected_ack_seq):
                     break
-                else:
-                    self.log_print("Invalid Ack, retransmitting")
 
     ## Scenario 3: Data packet bit-error
     def run_tx_sc3(self):

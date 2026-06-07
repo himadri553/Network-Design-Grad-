@@ -12,9 +12,15 @@
 import os
 
 """ Vars """
-log_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.txt')
-pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.bmp')
+log_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.txt')
+pic_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.bmp')
 output_pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_pic.bmp')
+plot_path_sc1   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_1')
+plot_path_sc2   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_2')
+plot_path_sc3   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_3')
+
+for _p in [plot_path_sc1, plot_path_sc2, plot_path_sc3]:
+    os.makedirs(_p, exist_ok=True)
 receiver_name = 'localhost'
 receiver_port = 12000
 buffer_size = 2048
