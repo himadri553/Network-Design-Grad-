@@ -115,3 +115,30 @@ class RECEIVER:
                 self.expected_seq = 1 - self.expected_seq
 
         self.reconstruct_image(self.full_pic)
+
+    def run_rx_sc4(self):
+        self.run_rx_sc1()
+
+    def run_rx_sc5(self, loss_rate):
+        while True:
+            rx_packet = self.rx_receive()
+            if rx_packet is None:
+                break
+            rx_packet = helper.inject_loss(rx_packet, loss_rate)
+            if rx_packet is None:
+                # Packet dropped - send nothing back; the sender's countdown
+                # timer will expire and retransmit (RDT 3.0 loss recovery)
+                continue
+
+            seq, checksum, length, data = self.extract(rx_packet)
+
+            if seq != self.expected_seq:
+                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+            elif self.corrupt(rx_packet):
+                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+            else:
+                self.full_pic.append(data)
+                self.rx_send(self.create_ack_packet(seq))
+                self.expected_seq = 1 - self.expected_seq
+
+        self.reconstruct_image(self.full_pic)

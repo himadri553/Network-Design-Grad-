@@ -6,12 +6,9 @@
         - Chunk refers to picture data broken down into size helper.packet_size
         - Packet is the data sent from the sender with all the headers
 
-    Phase 2 Tasks:
-        - Plots
-            - x-axis: loss/error rate (%)
-            - y-axis: completion time in seconds (average of runs)
-        - Deliverables 
-            - Demo Video
+    PHASE 3 TASKS
+    Logic Updates:
+        
 
     TODO:
         - 

@@ -44,3 +44,12 @@ def inject_error(packet, error_rate):
         packet[byte_index] ^= (1 << bit_index)
         return bytes(packet)
     return packet
+
+""" Loss Injection """
+def inject_loss(packet, loss_rate):
+    import random
+    if packet is None:
+        return None
+    if random.random() < loss_rate:
+        return None
+    return packet
