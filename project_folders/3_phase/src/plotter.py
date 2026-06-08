@@ -83,6 +83,8 @@ def generate_scenario_plot():
         1: ('Option 1 - No errors',      helper.plot_path_sc1),
         2: ('Option 2 - ACK bit-error',  helper.plot_path_sc2),
         3: ('Option 3 - Data bit-error', helper.plot_path_sc3),
+        4: ('Option 4 - ACK packet loss', helper.plot_path_sc4),
+        5: ('Option 5 - Data packet loss', helper.plot_path_sc5),
     }
 
     for sc, (label, save_path) in scenario_configs.items():
@@ -100,7 +102,7 @@ def generate_scenario_plot():
         x_data = [r for r in rates if r in buckets]
         y_data = [sum(buckets[r]) / len(buckets[r]) for r in x_data]
 
-        generic_plot(x_data, y_data, f"RDT 2.2 - {label}", "Error Rate (%)", "Avg Completion Time (s)")
+        generic_plot(x_data, y_data, f"RDT 3.0 - {label}", "Error Rate (%)", "Avg Completion Time (s)")
         plt.savefig(os.path.join(save_path, 'completion_time.png'))
         plt.close()
 

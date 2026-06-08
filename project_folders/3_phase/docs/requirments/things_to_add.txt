@@ -12,20 +12,14 @@ Add inject_loss(packet, loss_rate) — returns None with given probability (para
 Add plot_path_sc4 / plot_path_sc5 constants and create those directories alongside the existing plot_path_sc1..3.
 
 Plots and plot logging messages
-main.py
-    Add run4(loss_rate) and run5(loss_rate) thread-runner functions mirroring run2/run3, each emitting [PLOT] {time}, sc:4, error_rate:{rate}, duration:{...} and sc:5 equivalents.
-    Currently only the sc:3 sweep over rates is uncommented — all 5 option sweeps need to run (5 options × 20 rates × 5 runs = 500 total runs), so budget runtime accordingly (the rubric itself warns "you'll be running for days").
-    plotter.py
-Extend scenario_configs to include entries 4 ("Option 4 - ACK packet loss") and 5 ("Option 5 - Data packet loss") with their new plot paths.
-Implement generate_combined_plot() (currently a stub) to satisfy the rubric's required final chart: one plot with all 5 option lines averaged and overlaid on the shared rates x-axis (the multi-line generic_plot helper already supports this via *args).
-Update plot titles from "RDT 2.2 - ..." → "RDT 3.0 - ...".
-Logging
-Per R20, the [SENDER]/[RECEIVER] per-packet log_print calls need to be silenced/disabled during actual timing runs (e.g., a verbosity flag in helper) while keeping [MAIN]/[PLOT] markers intact for the plotter to parse.
+plotter.py
+- Implement generate_combined_plot() (currently a stub) to satisfy the rubric's required final chart: one plot with all 5 option lines averaged and overlaid on the shared rates x-axis (the multi-line generic_plot helper already supports this via *args).
+- Create all plots 
 
 Other stuff
-contribution.txt/.doc — new required deliverable (R24), confidential, not present yet.
-Demo video (R26) — must show Options 1–5 working end-to-end plus a look at the generated plots.
-Verify the instructor has GitHub repo access (R25).
-README run instructions must cover reproducing all 5 option runs and regenerating plots (R22).
-Possible cleanup: stale __pycache__ entries reference sender_2, receiver_2, main2_helper with no corresponding .py files — likely leftovers from an earlier refactor and worth deleting; also old_plotter.py looks like dead code to remove if unused.
-Consider whether the sender should send an explicit EOF/sentinel packet — right now the receiver only stops on a ~5s silence timeout, which adds dead time to every measured duration and will skew the completion-time plots.
+- contribution.txt/.doc — new required deliverable (R24), confidential, not present yet.
+- Demo video (R26) — must show Options 1–5 working end-to-end plus a look at the generated plots.
+- Verify the instructor has GitHub repo access (R25).
+- README run instructions must cover reproducing all 5 option runs and regenerating plots (R22).
+- Possible cleanup: stale __pycache__ entries reference sender_2, receiver_2, main2_helper with no corresponding .py files — likely leftovers from an earlier refactor and worth deleting; also old_plotter.py looks like dead code to remove if unused.
+- Consider whether the sender should send an explicit EOF/sentinel packet — right now the receiver only stops on a ~5s silence timeout, which adds dead time to every measured duration and will skew the completion-time plots.

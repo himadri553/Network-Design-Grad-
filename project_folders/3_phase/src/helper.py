@@ -13,8 +13,8 @@ import os
 
 """ Vars """
 log_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.txt')
-pic_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.bmp')
-output_pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_pic.bmp')
+pic_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.JPG')
+output_pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_pic.JPG')
 plot_path_sc1   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_1')
 plot_path_sc2   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_2')
 plot_path_sc3   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_3')

@@ -45,8 +45,9 @@ def run1():
     tx.sender_socket.close()
     time.sleep(0.5)
 
-def run2(error_rate):
+def run2(error_rate=0.0):
     # Run Scenario 2 - Ack packet bit-error
+    helper.main_log_print("Starting Scenario 2")
     tx2 = sender()
     rx2 = receiver()
     tx_thread = threading.Thread(target=tx2.run_tx_sc2, args=(error_rate,))
@@ -63,7 +64,7 @@ def run2(error_rate):
     tx2.sender_socket.close()
     time.sleep(0.5)
 
-def run3(error_rate):
+def run3(error_rate=0.0):
     # Run Scenario 3 - Data packet bit-error
     helper.main_log_print("Starting Scenario 3 ")
     tx3 = sender()
@@ -82,6 +83,44 @@ def run3(error_rate):
     tx3.sender_socket.close()
     time.sleep(0.5)
 
+def run4(error_rate=0.0):
+    # Run Scenario 4 
+    helper.main_log_print("Starting Scenario 4 ")
+    tx3 = sender()
+    rx3 = receiver()
+    tx_thread = threading.Thread(target=tx3.run_tx_sc4)
+    rx_thread = threading.Thread(target=rx3.run_rx_sc4, args=(error_rate,))
+    rx_thread.start()
+    time.sleep(0.5)
+    start = time.time()
+    tx_thread.start()
+    rx_thread.join()
+    tx_thread.join()
+    duration = time.time() - start
+    helper.main_log_print(f"[PLOT] {time.time()}, sc:4, error_rate:{error_rate}, duration:{duration:.4f}")
+    rx3.rx_socket.close()
+    tx3.sender_socket.close()
+    time.sleep(0.5)
+
+def run4(error_rate=0.0):
+    # Run Scenario 5
+    helper.main_log_print("Starting Scenario 5")
+    tx3 = sender()
+    rx3 = receiver()
+    tx_thread = threading.Thread(target=tx3.run_tx_sc5)
+    rx_thread = threading.Thread(target=rx3.run_rx_sc5, args=(error_rate,))
+    rx_thread.start()
+    time.sleep(0.5)
+    start = time.time()
+    tx_thread.start()
+    rx_thread.join()
+    tx_thread.join()
+    duration = time.time() - start
+    helper.main_log_print(f"[PLOT] {time.time()}, sc:5, error_rate:{error_rate}, duration:{duration:.4f}")
+    rx3.rx_socket.close()
+    tx3.sender_socket.close()
+    time.sleep(0.5)
+
 """ Entry """
 def main():
     # Clear output files
@@ -94,18 +133,40 @@ def main():
              0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
     num_runs = 5
 
-    # run1()
-    # plotter.generate_scenario_plot()
+    # Prompt the user to select scenario
+    while True:
+        user_input = input("Enter the scenario number: ")
+        match user_input:
+            case "1":
+                run1()
+                plotter.generate_scenario_plot()
+                break
+            case "2":
+                for error_rate in rates:
+                    run2(error_rate)
+                plotter.generate_scenario_plot()
+                break
+            case "3":
+                for error_rate in rates:
+                    run3(error_rate)
+                plotter.generate_scenario_plot()
+                break
+            case "4":
+                for error_rate in rates:
+                    run4(error_rate)
+                plotter.generate_scenario_plot()
+                break
+            case "5":
+                for error_rate in rates:
+                    run4(error_rate)
+                plotter.generate_scenario_plot()
+                break
+            case "test":
+                run2(0.5)
+                break
+            case _: 
+                print("Invalid scenario number, try again")
 
-    '''
-    for error_rate in rates:
-        run2(error_rate)
-    plotter.generate_scenario_plot()
-    '''
-
-    for error_rate in rates:
-        run3(error_rate)
-    plotter.generate_scenario_plot()
     
 if __name__ == "__main__":
     main()
