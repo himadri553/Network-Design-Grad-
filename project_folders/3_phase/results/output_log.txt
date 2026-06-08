@@ -1,41 +1,14 @@
 [MAIN] Clearing all output logs
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780959717.1723456, sc:3, error_rate:0.0, duration:5.6039
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780959819.5443008, sc:3, error_rate:0.05, duration:101.3698
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780959921.7832038, sc:3, error_rate:0.1, duration:101.2368
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960024.1223915, sc:3, error_rate:0.15, duration:101.3367
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960126.515951, sc:3, error_rate:0.2, duration:101.3914
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960228.7151046, sc:3, error_rate:0.25, duration:101.1968
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960331.210748, sc:3, error_rate:0.3, duration:101.4935
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960433.664003, sc:3, error_rate:0.35, duration:101.4508
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960536.2824705, sc:3, error_rate:0.4, duration:101.6160
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960638.6776278, sc:3, error_rate:0.45, duration:101.3928
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960741.0767596, sc:3, error_rate:0.5, duration:101.3968
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960843.5935159, sc:3, error_rate:0.55, duration:101.5147
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780960946.456863, sc:3, error_rate:0.6, duration:101.8609
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961049.4736297, sc:3, error_rate:0.65, duration:102.0146
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961153.3784857, sc:3, error_rate:0.7, duration:102.9026
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961257.4239984, sc:3, error_rate:0.75, duration:103.0432
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961361.4627073, sc:3, error_rate:0.8, duration:103.0364
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961465.485996, sc:3, error_rate:0.85, duration:103.0211
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961569.5442383, sc:3, error_rate:0.9, duration:103.0559
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1780961673.4244144, sc:3, error_rate:0.95, duration:102.8779
+[MAIN] Starting Scenario 4 
+[MAIN] [PLOT] 1780961730.896859, sc:4, error_rate:0.0, duration:5.6283
+[MAIN] Starting Scenario 4 
+[MAIN] [PLOT] 1780961833.2869983, sc:4, error_rate:0.05, duration:101.3877
+[MAIN] Starting Scenario 4 
+[MAIN] [PLOT] 1780961935.5133975, sc:4, error_rate:0.1, duration:101.2239
+[MAIN] Starting Scenario 4 
+[MAIN] [PLOT] 1780962038.1332579, sc:4, error_rate:0.15, duration:101.6173
+[MAIN] Starting Scenario 4 
+[MAIN] [PLOT] 1780962140.6772614, sc:4, error_rate:0.2, duration:101.5414
+[MAIN] Starting Scenario 4 
+[MAIN] [PLOT] 1780962242.8535166, sc:4, error_rate:0.25, duration:101.1745
+[MAIN] Starting Scenario 4 
