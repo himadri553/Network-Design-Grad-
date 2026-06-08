@@ -1,0 +1,31 @@
+Code edits to change sender/receiver logic
+sender.py
+Replace/augment the implicit 5-second recv timeout with an explicit countdown-timer mechanism that matches the RDT 3.0 FSM (Wait for ACK 0/1 states, start_timer/timeout/stop_timer).
+Remove the retries < 5 cap in run_tx_sc1 — true RDT 3.0 retransmits indefinitely until a valid ACK arrives; a hard cap will cause premature failures at high loss/error rates (50–95%) needed for the plots.
+Add run_tx_sc4 (Option 4 — ACK loss): after receiving an ACK, run it through a new helper.inject_loss(ack_packet, loss_rate) that returns None with probability loss_rate, then let the existing timeout/retransmit path recover — mirrors how run_tx_sc2 already calls inject_error.
+Add run_tx_sc5 (Option 5 — data loss): sender side is unaffected (loss happens at the receiver), so it can just delegate to run_tx_sc1, same as run_tx_sc3 does today.
+receiver.py
+Add run_rx_sc4 — delegates to run_rx_sc1 (loss happens at the sender for Option 4), mirroring run_rx_sc2.
+Add run_rx_sc5 (Option 5 — data loss): after rx_receive, pass the packet through helper.inject_loss; if it's dropped, do not send any ACK and keep listening (this is the key behavioral difference from run_rx_sc3's bit-error injection, which still ACKs).
+helper.py
+Add inject_loss(packet, loss_rate) — returns None with given probability (parallel to the existing inject_error).
+Add plot_path_sc4 / plot_path_sc5 constants and create those directories alongside the existing plot_path_sc1..3.
+
+Plots and plot logging messages
+main.py
+    Add run4(loss_rate) and run5(loss_rate) thread-runner functions mirroring run2/run3, each emitting [PLOT] {time}, sc:4, error_rate:{rate}, duration:{...} and sc:5 equivalents.
+    Currently only the sc:3 sweep over rates is uncommented — all 5 option sweeps need to run (5 options × 20 rates × 5 runs = 500 total runs), so budget runtime accordingly (the rubric itself warns "you'll be running for days").
+    plotter.py
+Extend scenario_configs to include entries 4 ("Option 4 - ACK packet loss") and 5 ("Option 5 - Data packet loss") with their new plot paths.
+Implement generate_combined_plot() (currently a stub) to satisfy the rubric's required final chart: one plot with all 5 option lines averaged and overlaid on the shared rates x-axis (the multi-line generic_plot helper already supports this via *args).
+Update plot titles from "RDT 2.2 - ..." → "RDT 3.0 - ...".
+Logging
+Per R20, the [SENDER]/[RECEIVER] per-packet log_print calls need to be silenced/disabled during actual timing runs (e.g., a verbosity flag in helper) while keeping [MAIN]/[PLOT] markers intact for the plotter to parse.
+
+Other stuff
+contribution.txt/.doc — new required deliverable (R24), confidential, not present yet.
+Demo video (R26) — must show Options 1–5 working end-to-end plus a look at the generated plots.
+Verify the instructor has GitHub repo access (R25).
+README run instructions must cover reproducing all 5 option runs and regenerating plots (R22).
+Possible cleanup: stale __pycache__ entries reference sender_2, receiver_2, main2_helper with no corresponding .py files — likely leftovers from an earlier refactor and worth deleting; also old_plotter.py looks like dead code to remove if unused.
+Consider whether the sender should send an explicit EOF/sentinel packet — right now the receiver only stops on a ~5s silence timeout, which adds dead time to every measured duration and will skew the completion-time plots.

@@ -18,13 +18,18 @@ output_pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'outp
 plot_path_sc1   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_1')
 plot_path_sc2   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_2')
 plot_path_sc3   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_3')
+plot_path_sc4   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_4')
+plot_path_sc5   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_5')
 
-for _p in [plot_path_sc1, plot_path_sc2, plot_path_sc3]:
+for _p in [plot_path_sc1, plot_path_sc2, plot_path_sc3, plot_path_sc4, plot_path_sc5]:
     os.makedirs(_p, exist_ok=True)
 receiver_name = 'localhost'
 receiver_port = 12000
 buffer_size = 2048
 packet_size = 1024
+
+# Logging verbosity flag - set to False to silence [SENDER]/[RECEIVER] logs during timing runs
+verbose_packet_logs = False
 
 """ Logger function """
 def main_log_print(message):
