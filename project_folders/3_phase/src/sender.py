@@ -101,12 +101,13 @@ class SENDER:
         except:
             return None
 
-    def wait_for_valid_ack(self, packet, expected_ack_seq, transform=None):
+    def wait_for_valid_ack(self, packet, expected_ack_seq, transform=None, max_retries=20):
         # RDT 3.0 "Wait for ACK" state: send packet and start_timer; on timeout,
         # retransmit and restart the timer; on a corrupt/duplicate ACK, keep waiting (Λ);
-        # on a valid ACK, stop_timer and return so the sender can advance to the next chunk
+        # on a valid ACK, stop_timer and return True; give up after max_retries and return False
         self.tx_send(packet)
         self.start_timer()
+        retries = 0
         while True:
             ack_packet = self.tx_receive()
             if transform is not None:
@@ -114,9 +115,12 @@ class SENDER:
 
             if self.valid_ack(ack_packet, expected_ack_seq):
                 self.stop_timer()
-                return
+                return True
 
             if self.timer_expired():
+                retries += 1
+                if retries >= max_retries:
+                    return False
                 self.tx_send(packet)
                 self.start_timer()
 
@@ -131,7 +135,8 @@ class SENDER:
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
-            self.wait_for_valid_ack(packet, expected_ack_seq)
+            if not self.wait_for_valid_ack(packet, expected_ack_seq):
+                break
 
     ## Scenario 2: ACK packet bit-error
     def run_tx_sc2(self, error_rate):
@@ -143,8 +148,9 @@ class SENDER:
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
-            self.wait_for_valid_ack(packet, expected_ack_seq,
-                                    transform=lambda ack: helper.inject_error(ack, error_rate))
+            if not self.wait_for_valid_ack(packet, expected_ack_seq,
+                                           transform=lambda ack: helper.inject_error(ack, error_rate)):
+                break
 
     ## Scenario 3: Data packet bit-error
     def run_tx_sc3(self):
@@ -160,8 +166,9 @@ class SENDER:
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
-            self.wait_for_valid_ack(packet, expected_ack_seq,
-                                    transform=lambda ack: helper.inject_loss(ack, loss_rate))
+            if not self.wait_for_valid_ack(packet, expected_ack_seq,
+                                           transform=lambda ack: helper.inject_loss(ack, loss_rate)):
+                break
 
     ## Scenario 5: Data packet loss
     def run_tx_sc5(self):

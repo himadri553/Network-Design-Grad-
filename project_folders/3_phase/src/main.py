@@ -86,10 +86,10 @@ def run3(error_rate=0.0):
 def run4(error_rate=0.0):
     # Run Scenario 4 
     helper.main_log_print("Starting Scenario 4 ")
-    tx3 = sender()
-    rx3 = receiver()
-    tx_thread = threading.Thread(target=tx3.run_tx_sc4)
-    rx_thread = threading.Thread(target=rx3.run_rx_sc4, args=(error_rate,))
+    tx4 = sender()
+    rx4 = receiver()
+    tx_thread = threading.Thread(target=tx4.run_tx_sc4, args=(error_rate,))
+    rx_thread = threading.Thread(target=rx4.run_rx_sc4)
     rx_thread.start()
     time.sleep(0.5)
     start = time.time()
@@ -98,17 +98,17 @@ def run4(error_rate=0.0):
     tx_thread.join()
     duration = time.time() - start
     helper.main_log_print(f"[PLOT] {time.time()}, sc:4, error_rate:{error_rate}, duration:{duration:.4f}")
-    rx3.rx_socket.close()
-    tx3.sender_socket.close()
+    rx4.rx_socket.close()
+    tx4.sender_socket.close()
     time.sleep(0.5)
 
-def run4(error_rate=0.0):
-    # Run Scenario 5
+def run5(error_rate=0.0):
+    # Run Scenario 5 - Data packet loss
     helper.main_log_print("Starting Scenario 5")
-    tx3 = sender()
-    rx3 = receiver()
-    tx_thread = threading.Thread(target=tx3.run_tx_sc5)
-    rx_thread = threading.Thread(target=rx3.run_rx_sc5, args=(error_rate,))
+    tx5 = sender()
+    rx5 = receiver()
+    tx_thread = threading.Thread(target=tx5.run_tx_sc5)
+    rx_thread = threading.Thread(target=rx5.run_rx_sc5, args=(error_rate,))
     rx_thread.start()
     time.sleep(0.5)
     start = time.time()
@@ -117,8 +117,8 @@ def run4(error_rate=0.0):
     tx_thread.join()
     duration = time.time() - start
     helper.main_log_print(f"[PLOT] {time.time()}, sc:5, error_rate:{error_rate}, duration:{duration:.4f}")
-    rx3.rx_socket.close()
-    tx3.sender_socket.close()
+    rx5.rx_socket.close()
+    tx5.sender_socket.close()
     time.sleep(0.5)
 
 """ Entry """
@@ -158,11 +158,11 @@ def main():
                 break
             case "5":
                 for error_rate in rates:
-                    run4(error_rate)
+                    run5(error_rate)
                 plotter.generate_scenario_plot()
                 break
             case "test":
-                run2(0.5)
+                run4(0.0)
                 break
             case _: 
                 print("Invalid scenario number, try again")
