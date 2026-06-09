@@ -101,13 +101,12 @@ class SENDER:
         except:
             return None
 
-    def wait_for_valid_ack(self, packet, expected_ack_seq, transform=None, max_retries=20):
+    def wait_for_valid_ack(self, packet, expected_ack_seq, transform=None, deadline=None):
         # RDT 3.0 "Wait for ACK" state: send packet and start_timer; on timeout,
         # retransmit and restart the timer; on a corrupt/duplicate ACK, keep waiting (Λ);
-        # on a valid ACK, stop_timer and return True; give up after max_retries and return False
+        # on a valid ACK, stop_timer and return True; return False if scenario deadline is hit
         self.tx_send(packet)
         self.start_timer()
-        retries = 0
         while True:
             ack_packet = self.tx_receive()
             if transform is not None:
@@ -118,8 +117,7 @@ class SENDER:
                 return True
 
             if self.timer_expired():
-                retries += 1
-                if retries >= max_retries:
+                if deadline is not None and time.time() >= deadline:
                     return False
                 self.tx_send(packet)
                 self.start_timer()
@@ -127,29 +125,24 @@ class SENDER:
     """ Runner Functions for each Scenario """
     ## Scenario 1: No loss/bit-errors
     def run_tx_sc1(self):
-        # Break down picture into packets
         self.pic_to_chunks()
-
-        # Transmit Full Image - the countdown timer retransmits indefinitely
-        # until a valid ACK is received (RDT 3.0 has no give-up state)
+        deadline = time.time() + helper.scenario_timeout
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
-            if not self.wait_for_valid_ack(packet, expected_ack_seq):
+            if not self.wait_for_valid_ack(packet, expected_ack_seq, deadline=deadline):
                 break
 
     ## Scenario 2: ACK packet bit-error
     def run_tx_sc2(self, error_rate):
-        # Break down picture into packets
         self.pic_to_chunks()
-
-        # Transmit Full Image - inject bit-errors into received ACKs; the
-        # corrupted checksum fails validation and the countdown timer retransmits
+        deadline = time.time() + helper.scenario_timeout
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
             if not self.wait_for_valid_ack(packet, expected_ack_seq,
-                                           transform=lambda ack: helper.inject_error(ack, error_rate)):
+                                           transform=lambda ack: helper.inject_error(ack, error_rate),
+                                           deadline=deadline):
                 break
 
     ## Scenario 3: Data packet bit-error
@@ -158,16 +151,14 @@ class SENDER:
 
     ## Scenario 4: ACK packet loss
     def run_tx_sc4(self, loss_rate):
-        # Break down picture into packets
         self.pic_to_chunks()
-
-        # Transmit Full Image - dropped ACKs never arrive, so the countdown
-        # timer expires and retransmits the same packet (RDT 3.0 loss recovery)
+        deadline = time.time() + helper.scenario_timeout
         for i in range(len(self.all_chunks)):
             packet = self.create_data_packet(self.all_chunks[i])
             expected_ack_seq = 1 - self.seq
             if not self.wait_for_valid_ack(packet, expected_ack_seq,
-                                           transform=lambda ack: helper.inject_loss(ack, loss_rate)):
+                                           transform=lambda ack: helper.inject_loss(ack, loss_rate),
+                                           deadline=deadline):
                 break
 
     ## Scenario 5: Data packet loss

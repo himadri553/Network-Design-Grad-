@@ -162,7 +162,9 @@ def main():
                 plotter.generate_scenario_plot()
                 break
             case "test":
-                plotter.generate_scenario_plot()
+                test_rates = [0.10, 0.50, 0.55, 0.60, 0.65]
+                for error_rate in test_rates:
+                    run3(error_rate)
                 break
             case _: 
                 print("Invalid scenario number, try again")

@@ -30,6 +30,7 @@ packet_size = 1024
 
 # Logging verbosity flag - set to False to silence [SENDER]/[RECEIVER] logs during timing runs
 verbose_packet_logs = False
+scenario_timeout = 120
 
 """ Logger function """
 def main_log_print(message):

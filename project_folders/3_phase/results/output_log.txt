@@ -1,36 +1,4 @@
 [MAIN] Clearing all output logs
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780961730.896859, sc:4, error_rate:0.0, duration:5.6283
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780961833.2869983, sc:4, error_rate:0.05, duration:101.3877
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780961935.5133975, sc:4, error_rate:0.1, duration:101.2239
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962038.1332579, sc:4, error_rate:0.15, duration:101.6173
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962140.6772614, sc:4, error_rate:0.2, duration:101.5414
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962242.8535166, sc:4, error_rate:0.25, duration:101.1745
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962345.2879586, sc:4, error_rate:0.3, duration:101.4321
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962447.2692754, sc:4, error_rate:0.35, duration:100.9793
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962549.5456269, sc:4, error_rate:0.4, duration:101.2746
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962651.6299424, sc:4, error_rate:0.45, duration:101.0825
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962753.8888214, sc:4, error_rate:0.5, duration:101.2563
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962856.1672046, sc:4, error_rate:0.55, duration:101.2761
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780962958.4110928, sc:4, error_rate:0.6, duration:101.2416
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780963060.5637367, sc:4, error_rate:0.65, duration:101.1508
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780963162.8109598, sc:4, error_rate:0.7, duration:101.2447
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780963264.9751906, sc:4, error_rate:0.75, duration:101.1623
-[MAIN] Starting Scenario 4 
-[MAIN] [PLOT] 1780963367.2369351, sc:4, error_rate:0.8, duration:101.2590
-[MAIN] Starting Scenario 4 
+[MAIN] Starting Scenario 3 
+[MAIN] [PLOT] 1780964403.039356, sc:3, error_rate:0.1, duration:123.2481
+[MAIN] Starting Scenario 3 
