@@ -28,8 +28,8 @@ import plotter
 def run1():
     # Run Scenario 1 - No bit-error
     helper.main_log_print("Starting Scenario 1")
-    tx = sender()
-    rx = receiver()
+    tx = sender(helper.N)
+    rx = receiver(helper.N)
     tx_thread = threading.Thread(target=tx.run_tx_sc1)
     rx_thread = threading.Thread(target=rx.run_rx_sc1)
     rx_thread.start()
@@ -47,8 +47,8 @@ def run1():
 def run2(error_rate=0.0):
     # Run Scenario 2 - Ack packet bit-error
     helper.main_log_print("Starting Scenario 2")
-    tx2 = sender()
-    rx2 = receiver()
+    tx2 = sender(helper.N)
+    rx2 = receiver(helper.N)
     tx_thread = threading.Thread(target=tx2.run_tx_sc2, args=(error_rate,))
     rx_thread = threading.Thread(target=rx2.run_rx_sc2)
     rx_thread.start()
@@ -66,8 +66,8 @@ def run2(error_rate=0.0):
 def run3(error_rate=0.0):
     # Run Scenario 3 - Data packet bit-error
     helper.main_log_print("Starting Scenario 3 ")
-    tx3 = sender()
-    rx3 = receiver()
+    tx3 = sender(helper.N)
+    rx3 = receiver(helper.N)
     tx_thread = threading.Thread(target=tx3.run_tx_sc3)
     rx_thread = threading.Thread(target=rx3.run_rx_sc3, args=(error_rate,))
     rx_thread.start()
@@ -85,8 +85,8 @@ def run3(error_rate=0.0):
 def run4(error_rate=0.0):
     # Run Scenario 4 
     helper.main_log_print("Starting Scenario 4 ")
-    tx4 = sender()
-    rx4 = receiver()
+    tx4 = sender(helper.N)
+    rx4 = receiver(helper.N)
     tx_thread = threading.Thread(target=tx4.run_tx_sc4, args=(error_rate,))
     rx_thread = threading.Thread(target=rx4.run_rx_sc4)
     rx_thread.start()
@@ -104,8 +104,8 @@ def run4(error_rate=0.0):
 def run5(error_rate=0.0):
     # Run Scenario 5 - Data packet loss
     helper.main_log_print("Starting Scenario 5")
-    tx5 = sender()
-    rx5 = receiver()
+    tx5 = sender(helper.N)
+    rx5 = receiver(helper.N)
     tx_thread = threading.Thread(target=tx5.run_tx_sc5)
     rx_thread = threading.Thread(target=rx5.run_rx_sc5, args=(error_rate,))
     rx_thread.start()
@@ -120,12 +120,24 @@ def run5(error_rate=0.0):
     tx5.sender_socket.close()
     time.sleep(0.5)
 
+def run_recovery_demo():
+    # R13: demonstrate Phase 4 with and without loss recovery active, using Option 5
+    # (data packet loss). At 0% loss the recovery path never triggers; at 30% loss the
+    # countdown timer + Go-Back-N retransmit kick in. Both must reconstruct the image.
+    helper.main_log_print("Recovery demo: WITHOUT recovery (0% loss)")
+    run5(0.0)
+    helper.main_log_print("Recovery demo: WITH recovery (30% loss)")
+    run5(0.30)
+
 """ Entry """
 def main():
     # Clear output files
     with open(helper.log_path, 'w') as log_file:
         pass
     helper.main_log_print("Clearing all output logs")
+
+    # R17: silence per-packet [SENDER]/[RECEIVER] debug logs during timing sweeps
+    helper.verbose_packet_logs = False
 
     ## Run each scenario 5 times with their corresponding rates
     rates = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 
@@ -160,8 +172,11 @@ def main():
                     run5(error_rate)
                 plotter.generate_scenario_plot()
                 break
+            case "demo":
+                run_recovery_demo()
+                break
             case "test":
-                run1()
+                run2()
                 break
             case _: 
                 print("Invalid scenario number, try again")

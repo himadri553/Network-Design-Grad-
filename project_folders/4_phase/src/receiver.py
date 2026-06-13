@@ -13,17 +13,23 @@ import helper
 import time
 
 class RECEIVER:
-    def __init__(self):
+    def __init__(self, N=None):
         # Self Vars
         self.full_pic = []
         self.expected_seq = 0
+
+        # Window size (the basic GBN receiver doesn't buffer out-of-order packets,
+        # but N is accepted for symmetry with the sender / window-size sweep)
+        self.N = N if N is not None else helper.N
 
         # Setup sockets 
         self.rx_socket = socket(AF_INET, SOCK_DGRAM)
         self.rx_socket.bind(('localhost', helper.receiver_port))
 
     def log_print(self, message):
-        # Writes a message to the output log
+        # Writes a message to the output log (silenced during timing runs, R17)
+        if not helper.verbose_packet_logs:
+            return
         with open(helper.log_path, 'a') as log_file:
             log_file.write(f"[RECEIVER] {message}\n")
 

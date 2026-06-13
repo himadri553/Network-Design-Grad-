@@ -1,3 +1,41 @@
 [MAIN] Clearing all output logs
-[MAIN] Starting Scenario 1
-[MAIN] [PLOT] 1781373199.1377144, sc:1, error_rate:0.0, duration:5.5591
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781374991.9228976, sc:2, error_rate:0.0, duration:5.5539
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781374998.4804416, sc:2, error_rate:0.05, duration:5.5551
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375005.0379329, sc:2, error_rate:0.1, duration:5.5554
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375011.592999, sc:2, error_rate:0.15, duration:5.5528
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375018.1328998, sc:2, error_rate:0.2, duration:5.5372
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375141.5389156, sc:2, error_rate:0.25, duration:122.4035
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375148.0997565, sc:2, error_rate:0.3, duration:5.5582
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375154.6392434, sc:2, error_rate:0.35, duration:5.5370
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375161.2119498, sc:2, error_rate:0.4, duration:5.5702
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375284.4145603, sc:2, error_rate:0.45, duration:122.2004
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375290.9668827, sc:2, error_rate:0.5, duration:5.5501
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375414.4642415, sc:2, error_rate:0.55, duration:122.4944
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375537.6175077, sc:2, error_rate:0.6, duration:122.1509
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375660.9728565, sc:2, error_rate:0.65, duration:122.3531
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375784.4155254, sc:2, error_rate:0.7, duration:122.4406
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781375907.6523716, sc:2, error_rate:0.75, duration:122.2347
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781376030.748744, sc:2, error_rate:0.8, duration:122.0938
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781376153.9364538, sc:2, error_rate:0.85, duration:122.1853
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781376277.144774, sc:2, error_rate:0.9, duration:122.2062
+[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781376400.4016378, sc:2, error_rate:0.95, duration:122.2544

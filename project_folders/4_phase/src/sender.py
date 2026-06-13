@@ -33,7 +33,9 @@ class SENDER:
         self.sender_socket = socket(AF_INET, SOCK_DGRAM)
 
     def log_print(self, message):
-        # Writes a message to the output log
+        # Writes a message to the output log (silenced during timing runs, R17)
+        if not helper.verbose_packet_logs:
+            return
         with open(helper.log_path, 'a') as log_file:
             log_file.write(f"[SENDER] {message}\n")
 
