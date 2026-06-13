@@ -3,19 +3,6 @@
 Tracks the gap between `DESIGN_DOC_4.md` and the current code (still a Phase 3
 stop-and-wait / alternating-bit copy). Ordered roughly by dependency.
 
-## 1. helper.py
-- [ ] Add `N = 10` (default window size), read by sender/receiver at startup
-- [ ] Add `window_sizes = [1, 2, 5, 10, 20, 50]` for the Chart 2 sweep
-- [ ] Add `rates` list `[0, 5, ..., 95]` (already in plotter.py, move/share if useful)
-- [ ] Keep `inject_error()` / `inject_loss()` as-is (unchanged from Phase 3 per design doc)
-- [ ] Confirm `packet_size`, `buffer_size`, `log_path`, etc. still fit GBN packet sizes
-
-## 2. Packet format (shared by sender/receiver)
-- [ ] Data packet: `seq` (1 byte, 0-255), `checksum` (1 byte), `length` (4 bytes BE), `data`
-- [ ] ACK packet: `ack_seq` (1 byte, cumulative), `checksum` (1 byte)
-- [ ] Checksum = sum of header (minus checksum byte) + payload, mod 256
-- [ ] Replace alternating `self.seq = 1 - self.seq` with `self.seq = (self.seq + 1) mod 256`
-
 ## 3. sender.py - rewrite for GBN
 - [ ] Replace single-packet `wait_for_valid_ack` (stop-and-wait) with pipelined `rdt_send` loop
 - [ ] State vars: `base = 0`, `nextseqnum = 0`, `sndpkt = {}` (dict keyed by seq)

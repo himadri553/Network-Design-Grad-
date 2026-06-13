@@ -56,8 +56,8 @@ class SENDER:
         header = bytes([self.seq, checksum]) + length.to_bytes(4, byteorder='big')
         packet = header + data
 
-        # Alternate seq number
-        self.seq = 1 - self.seq
+        # Advance seq number, wrapping modulo 256 (GBN sequence space)
+        self.seq = (self.seq + 1) % 256
 
         return packet
     
