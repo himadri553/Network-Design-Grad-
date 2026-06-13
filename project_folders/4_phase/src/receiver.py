@@ -83,13 +83,13 @@ class RECEIVER:
             seq, checksum, length, data = self.extract(rx_packet)
 
             if seq != self.expected_seq:
-                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+                self.rx_send(self.create_ack_packet((self.expected_seq - 1) % 256))
             elif self.corrupt(rx_packet):
-                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+                self.rx_send(self.create_ack_packet((self.expected_seq - 1) % 256))
             else:
                 self.full_pic.append(data)
                 self.rx_send(self.create_ack_packet(seq))
-                self.expected_seq = 1 - self.expected_seq
+                self.expected_seq = (self.expected_seq + 1) % 256
 
         self.reconstruct_image(self.full_pic)
 
@@ -106,13 +106,13 @@ class RECEIVER:
             seq, checksum, length, data = self.extract(rx_packet)
 
             if seq != self.expected_seq:
-                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+                self.rx_send(self.create_ack_packet((self.expected_seq - 1) % 256))
             elif self.corrupt(rx_packet):
-                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+                self.rx_send(self.create_ack_packet((self.expected_seq - 1) % 256))
             else:
                 self.full_pic.append(data)
                 self.rx_send(self.create_ack_packet(seq))
-                self.expected_seq = 1 - self.expected_seq
+                self.expected_seq = (self.expected_seq + 1) % 256
 
         self.reconstruct_image(self.full_pic)
 
@@ -133,12 +133,12 @@ class RECEIVER:
             seq, checksum, length, data = self.extract(rx_packet)
 
             if seq != self.expected_seq:
-                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+                self.rx_send(self.create_ack_packet((self.expected_seq - 1) % 256))
             elif self.corrupt(rx_packet):
-                self.rx_send(self.create_ack_packet(1 - self.expected_seq))
+                self.rx_send(self.create_ack_packet((self.expected_seq - 1) % 256))
             else:
                 self.full_pic.append(data)
                 self.rx_send(self.create_ack_packet(seq))
-                self.expected_seq = 1 - self.expected_seq
+                self.expected_seq = (self.expected_seq + 1) % 256
 
         self.reconstruct_image(self.full_pic)

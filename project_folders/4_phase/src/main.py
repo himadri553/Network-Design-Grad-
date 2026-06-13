@@ -161,7 +161,7 @@ def main():
                 plotter.generate_scenario_plot()
                 break
             case "test":
-                run3()
+                run1()
                 break
             case _: 
                 print("Invalid scenario number, try again")

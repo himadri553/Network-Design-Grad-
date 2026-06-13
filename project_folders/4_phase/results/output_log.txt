@@ -1,3 +1,3 @@
 [MAIN] Clearing all output logs
-[MAIN] Starting Scenario 3 
-[MAIN] [PLOT] 1781370108.9708319, sc:3, error_rate:0.0, duration:5.5624
+[MAIN] Starting Scenario 1
+[MAIN] [PLOT] 1781373199.1377144, sc:1, error_rate:0.0, duration:5.5591

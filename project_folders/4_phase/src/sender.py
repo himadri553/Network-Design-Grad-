@@ -12,15 +12,22 @@ import helper
 import time
 
 class SENDER:
-    def __init__(self):
+    def __init__(self, N=None):
         # Self vars
         self.all_chunks = []
-        self.seq = 0
 
-        # Countdown timer state (RDT 3.0 start_timer/timeout/stop_timer)
+        # Countdown timer state (start_timer/timeout/stop_timer)
         self.timeout_interval = 5
         self.poll_interval = 0.5
         self.timer_deadline = None
+
+        # Go-Back-N sender state. base/nextseqnum are absolute chunk indices
+        # (monotonic); the seq byte placed in each packet is index % 256. Because
+        # N <= 50 < 256, (nextseqnum - base) never needs an explicit mod here.
+        self.N = N if N is not None else helper.N
+        self.base = 0          # absolute index of oldest unACKed chunk
+        self.nextseqnum = 0    # absolute index of next chunk to send
+        self.sndpkt = {}       # absolute index -> built packet, currently in flight
 
         # Setup socket
         self.sender_socket = socket(AF_INET, SOCK_DGRAM)
@@ -36,7 +43,7 @@ class SENDER:
         if not self.all_chunks:
             with open(helper.pic_path, "rb") as f:
                 data = f.read()
-            
+
             total_bytes = len(data)
             num_packets = (total_bytes + helper.packet_size - 1) // helper.packet_size
 
@@ -44,35 +51,38 @@ class SENDER:
                 chunk = data[i * helper.packet_size : (i + 1) * helper.packet_size]
                 self.all_chunks.append(chunk)
 
-    def create_data_packet(self, data):
-        # Create length
+    def create_data_packet(self, data, seq):
+        # Builds a data packet for the given seq byte (0-255):
+        # [ seq | checksum | length(4B BE) | data ]
         length = len(data)
 
-        # Create header without checksum first, then get checksum over header + data
-        header_no_checksum = bytes([self.seq]) + length.to_bytes(4, byteorder='big')
+        # Checksum over header (excluding the checksum byte) + payload, mod 256
+        header_no_checksum = bytes([seq]) + length.to_bytes(4, byteorder='big')
         checksum = (sum(header_no_checksum) + sum(data)) % 256
 
-        # Return a full packet with checksum inserted
-        header = bytes([self.seq, checksum]) + length.to_bytes(4, byteorder='big')
-        packet = header + data
+        header = bytes([seq, checksum]) + length.to_bytes(4, byteorder='big')
+        return header + data
 
-        # Advance seq number, wrapping modulo 256 (GBN sequence space)
-        self.seq = (self.seq + 1) % 256
-
-        return packet
-    
-    def valid_ack(self, ack_packet, expected_ack_seq):
-        if ack_packet is None:
-            return False
+    def valid_ack(self, ack_packet):
+        # Returns the cumulative ack_seq byte if the ACK is present and uncorrupted,
+        # otherwise None (corrupt/lost ACK -> Lambda transition, no state change)
+        if ack_packet is None or len(ack_packet) < 2:
+            return None
         ack_seq  = ack_packet[0]
         checksum = ack_packet[1]
         if ack_seq % 256 != checksum:
-            return False
-        if ack_seq != expected_ack_seq:
-            return False
-        return True
+            return None
+        return ack_seq
 
-    """ Countdown timer functions (RDT 3.0 start_timer/timeout/stop_timer) """
+    def ack_to_abs(self, ack_byte):
+        # Map a cumulative ACK byte back to an absolute chunk index inside the
+        # current window [base, nextseqnum). Window < 256, so at most one match.
+        for idx in range(self.base, self.nextseqnum):
+            if idx % 256 == ack_byte:
+                return idx
+        return None
+
+    """ Countdown timer functions (start_timer/timeout/stop_timer) """
     def start_timer(self):
         # (Re)starts the countdown from timeout_interval seconds
         self.timer_deadline = time.time() + self.timeout_interval
@@ -82,7 +92,7 @@ class SENDER:
         return self.timer_deadline is not None and time.time() >= self.timer_deadline
 
     def stop_timer(self):
-        # Cancels the countdown once a valid ACK arrives
+        # Cancels the countdown once the window fully drains
         self.timer_deadline = None
 
     """ Connection functions """
@@ -101,51 +111,68 @@ class SENDER:
         except:
             return None
 
-    def wait_for_valid_ack(self, packet, expected_ack_seq, transform=None, deadline=None):
-        # RDT 3.0 "Wait for ACK" state: send packet and start_timer; on timeout,
-        # retransmit and restart the timer; on a corrupt/duplicate ACK, keep waiting (Λ);
-        # on a valid ACK, stop_timer and return True; return False if scenario deadline is hit
-        self.tx_send(packet)
-        self.start_timer()
-        while True:
+    def gbn_send_loop(self, ack_transform=None, deadline=None):
+        # Pipelined Go-Back-N send loop (replaces stop-and-wait wait_for_valid_ack).
+        #   ack_transform: optional fn applied to each received ACK before validation
+        #                  (per-scenario error/loss injection on the ACK path)
+        #   deadline:      wall-clock scenario cap so a run always terminates
+        total = len(self.all_chunks)
+
+        while self.base < total:
+            # --- Send step: fill the window with new packets, back-to-back ---
+            while self.nextseqnum < total and (self.nextseqnum - self.base) < self.N:
+                seq = self.nextseqnum % 256
+                packet = self.create_data_packet(self.all_chunks[self.nextseqnum], seq)
+                self.sndpkt[self.nextseqnum] = packet
+                self.tx_send(packet)
+                if self.base == self.nextseqnum:   # window was empty -> start timer
+                    self.start_timer()
+                self.nextseqnum += 1
+
+            # --- Receive-ACK step ---
             ack_packet = self.tx_receive()
-            if transform is not None:
-                ack_packet = transform(ack_packet)
+            if ack_transform is not None:
+                ack_packet = ack_transform(ack_packet)
 
-            if self.valid_ack(ack_packet, expected_ack_seq):
-                self.stop_timer()
-                return True
+            ack_seq = self.valid_ack(ack_packet)
+            if ack_seq is not None:
+                acked = self.ack_to_abs(ack_seq)
+                if acked is not None and acked >= self.base:
+                    # Cumulative ACK: advance base past acked, prune buffered packets
+                    for idx in range(self.base, acked + 1):
+                        self.sndpkt.pop(idx, None)
+                    self.base = acked + 1
+                    if self.base == self.nextseqnum:
+                        self.stop_timer()          # window drained
+                    else:
+                        self.start_timer()         # restart for new oldest unACKed
+            # Corrupt/lost ACK -> ack_seq is None -> ignore (Lambda), no state change
 
+            # --- Timeout step: Go-Back-N batch retransmit ---
             if self.timer_expired():
                 if deadline is not None and time.time() >= deadline:
-                    return False
-                self.tx_send(packet)
+                    return
+                for idx in range(self.base, self.nextseqnum):
+                    self.tx_send(self.sndpkt[idx])
                 self.start_timer()
+
+        self.stop_timer()
 
     """ Runner Functions for each Scenario """
     ## Scenario 1: No loss/bit-errors
     def run_tx_sc1(self):
         self.pic_to_chunks()
         deadline = time.time() + helper.scenario_timeout
-        for i in range(len(self.all_chunks)):
-            packet = self.create_data_packet(self.all_chunks[i])
-            expected_ack_seq = 1 - self.seq
-            if not self.wait_for_valid_ack(packet, expected_ack_seq, deadline=deadline):
-                break
+        self.gbn_send_loop(deadline=deadline)
 
     ## Scenario 2: ACK packet bit-error
     def run_tx_sc2(self, error_rate):
         self.pic_to_chunks()
         deadline = time.time() + helper.scenario_timeout
-        for i in range(len(self.all_chunks)):
-            packet = self.create_data_packet(self.all_chunks[i])
-            expected_ack_seq = 1 - self.seq
-            if not self.wait_for_valid_ack(packet, expected_ack_seq,
-                                           transform=lambda ack: helper.inject_error(ack, error_rate),
-                                           deadline=deadline):
-                break
+        self.gbn_send_loop(ack_transform=lambda ack: helper.inject_error(ack, error_rate),
+                           deadline=deadline)
 
-    ## Scenario 3: Data packet bit-error
+    ## Scenario 3: Data packet bit-error (injection is receiver-side)
     def run_tx_sc3(self):
         self.run_tx_sc1()
 
@@ -153,14 +180,9 @@ class SENDER:
     def run_tx_sc4(self, loss_rate):
         self.pic_to_chunks()
         deadline = time.time() + helper.scenario_timeout
-        for i in range(len(self.all_chunks)):
-            packet = self.create_data_packet(self.all_chunks[i])
-            expected_ack_seq = 1 - self.seq
-            if not self.wait_for_valid_ack(packet, expected_ack_seq,
-                                           transform=lambda ack: helper.inject_loss(ack, loss_rate),
-                                           deadline=deadline):
-                break
+        self.gbn_send_loop(ack_transform=lambda ack: helper.inject_loss(ack, loss_rate),
+                           deadline=deadline)
 
-    ## Scenario 5: Data packet loss
+    ## Scenario 5: Data packet loss (injection is receiver-side)
     def run_tx_sc5(self):
         self.run_tx_sc1()

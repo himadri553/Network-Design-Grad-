@@ -3,37 +3,37 @@
 Tracks the gap between `DESIGN_DOC_4.md` and the current code (still a Phase 3
 stop-and-wait / alternating-bit copy). Ordered roughly by dependency.
 
-## 3. sender.py - rewrite for GBN
-- [ ] Replace single-packet `wait_for_valid_ack` (stop-and-wait) with pipelined `rdt_send` loop
-- [ ] State vars: `base = 0`, `nextseqnum = 0`, `sndpkt = {}` (dict keyed by seq)
-- [ ] Sending step: while `(nextseqnum - base) mod 256 < N`, build/send/buffer packet for
-      `nextseqnum`, start timer if `base == nextseqnum` before send, then `nextseqnum += 1 mod 256`
-- [ ] Receive-ACK step: if ACK uncorrupted, `base = (ack_seq + 1) mod 256`;
-      `stop_timer()` if `base == nextseqnum`, else `restart_timer()`
-- [ ] Corrupt ACK -> ignore (Λ transition), no state change
-- [ ] Timeout step: retransmit `sndpkt[base] ... sndpkt[nextseqnum-1]` in order, restart timer
-- [ ] Prune `sndpkt` entries with seq `< base` (mod-aware) once `base` advances
-- [ ] `run_tx_sc1`: no injection
-- [ ] `run_tx_sc2`: `inject_error()` on every received ACK before corrupt-check
-- [ ] `run_tx_sc3`: identical to sc1 (injection happens receiver-side)
-- [ ] `run_tx_sc4`: `inject_loss()` on every received ACK (drop -> None)
-- [ ] `run_tx_sc5`: identical to sc1 (injection happens receiver-side)
-- [ ] Keep `scenario_timeout` wall-clock cap so every run terminates and logs `[PLOT]`
+## 3. sender.py - rewrite for GBN  ✅ DONE (scenario 1 verified)
+- [x] Replace single-packet `wait_for_valid_ack` (stop-and-wait) with pipelined `gbn_send_loop`
+- [x] State vars: `base = 0`, `nextseqnum = 0`, `sndpkt = {}` (absolute indices; seq byte = idx % 256)
+- [x] Sending step: while `(nextseqnum - base) < N`, build/send/buffer packet for
+      `nextseqnum`, start timer if `base == nextseqnum` before send, then `nextseqnum += 1`
+- [x] Receive-ACK step: if ACK uncorrupted, advance `base` past acked index;
+      `stop_timer()` if `base == nextseqnum`, else restart timer (`ack_to_abs` maps ACK byte -> abs idx)
+- [x] Corrupt ACK -> `valid_ack` returns None -> ignore (Λ transition), no state change
+- [x] Timeout step: retransmit `sndpkt[base] ... sndpkt[nextseqnum-1]` in order, restart timer
+- [x] Prune `sndpkt` entries `< base` once `base` advances
+- [x] `run_tx_sc1`: no injection
+- [x] `run_tx_sc2`: `inject_error()` on every received ACK before corrupt-check
+- [x] `run_tx_sc3`: identical to sc1 (injection happens receiver-side)
+- [x] `run_tx_sc4`: `inject_loss()` on every received ACK (drop -> None)
+- [x] `run_tx_sc5`: identical to sc1 (injection happens receiver-side)
+- [x] Keep `scenario_timeout` wall-clock cap so every run terminates and logs `[PLOT]`
 
-## 4. receiver.py - rewrite for GBN
-- [ ] Replace alternating `expected_seq` (0/1) with mod-256 `expected_seq`
-- [ ] On packet: extract seq/checksum/length/data, recompute checksum
-- [ ] If corrupt OR `seq != expected_seq`: discard, send ACK with
+## 4. receiver.py - rewrite for GBN  ✅ DONE (scenario 1 verified)
+- [x] Replace alternating `expected_seq` (0/1) with mod-256 `expected_seq`
+- [x] On packet: extract seq/checksum/length/data, recompute checksum
+- [x] If corrupt OR `seq != expected_seq`: discard, send ACK with
       `ack_seq = (expected_seq - 1) mod 256`, no state change (default branch)
-- [ ] If uncorrupted and `seq == expected_seq`: append to `full_pic`, send ACK with
+- [x] If uncorrupted and `seq == expected_seq`: append to `full_pic`, send ACK with
       `ack_seq = expected_seq`, `expected_seq = (expected_seq + 1) mod 256`
-- [ ] No receiver-side reordering buffer (matches basic GBN receiver)
-- [ ] `run_rx_sc1`: no injection
-- [ ] `run_rx_sc2`: identical to sc1 (injection happens sender-side)
-- [ ] `run_rx_sc3`: `inject_error()` on every incoming data packet before validation
-- [ ] `run_rx_sc4`: identical to sc1 (injection happens sender-side)
-- [ ] `run_rx_sc5`: `inject_loss()` on every incoming data packet (drop -> no ACK sent)
-- [ ] On overall idle timeout (5s), break loop, reconstruct image from `full_pic`
+- [x] No receiver-side reordering buffer (matches basic GBN receiver)
+- [x] `run_rx_sc1`: no injection
+- [x] `run_rx_sc2`: identical to sc1 (injection happens sender-side)
+- [x] `run_rx_sc3`: `inject_error()` on every incoming data packet before validation
+- [x] `run_rx_sc4`: identical to sc1 (injection happens sender-side)
+- [x] `run_rx_sc5`: `inject_loss()` on every incoming data packet (drop -> no ACK sent)
+- [x] On overall idle timeout (5s), break loop, reconstruct image from `full_pic`
 
 ## 5. main.py - rewrite scenario runners + sweeps
 - [ ] Pass `N` into both sender and receiver at construction

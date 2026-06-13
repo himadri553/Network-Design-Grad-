@@ -29,6 +29,9 @@ receiver_port = 12000
 buffer_size = 2048
 packet_size = 1024
 
+# Go-Back-N default window size (baseline for Chart 1 / Chart 3)
+N = 10
+
 # Logging verbosity flag - set to False to silence [SENDER]/[RECEIVER] logs during timing runs
 verbose_packet_logs = False
 scenario_timeout = 120
