@@ -12,6 +12,7 @@
 import os
 
 """ Vars """
+# Paths 
 log_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.txt')
 pic_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.JPG')
 output_pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_pic.JPG')
@@ -31,6 +32,10 @@ packet_size = 1024
 # Logging verbosity flag - set to False to silence [SENDER]/[RECEIVER] logs during timing runs
 verbose_packet_logs = False
 scenario_timeout = 120
+
+# Window stuff (phase 4)
+N = 10
+window_sizes = [1, 2, 5, 10, 20, 50]
 
 """ Logger function """
 def main_log_print(message):
