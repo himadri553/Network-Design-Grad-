@@ -36,7 +36,7 @@ stop-and-wait / alternating-bit copy). Ordered roughly by dependency.
 - [x] On overall idle timeout (5s), break loop, reconstruct image from `full_pic`
 
 ## 5. main.py - rewrite scenario runners + sweeps
-- [ ] Pass `N` into both sender and receiver at construction
+- [x] Pass `N` into both sender and receiver at construction
 - [ ] Chart 1: for each option 1-5, for each rate in `rates` (0-95%, step 5%), run 5x,
       log `[PLOT] time, sc:N, error_rate:X, duration:Y`
       - Option 1 always 0% (flat baseline across all rate buckets)
@@ -44,8 +44,10 @@ stop-and-wait / alternating-bit copy). Ordered roughly by dependency.
       `N` over `[1, 2, 5, 10, 20, 50]`, 5 runs each, fresh sender/receiver pair per N
 - [ ] Chart 3: re-run Phase 1-4 transfer of same image at fixed 10% loss/bit-error,
       5 runs each (Phase 1-3 may need their own runner scripts/imports)
-- [ ] Set `verbose_packet_logs = False` during all timing sweeps (R17)
-- [ ] Add a "with/without recovery" demo path (rate = 0 vs rate > 0) for R13
+- [x] Set `verbose_packet_logs = False` during all timing sweeps (R17) - `log_print`
+      now honors the flag; main() forces it False before sweeps
+- [x] Add a "with/without recovery" demo path (rate = 0 vs rate > 0) for R13 -
+      `run_recovery_demo()` + "demo" menu case (Option 5 at 0% then 30%)
 
 ## 6. plotter.py - implement Chart 1/2/3
 - [ ] Replace Phase 3 "RDT 3.0" per-scenario plots with the 3 required charts
