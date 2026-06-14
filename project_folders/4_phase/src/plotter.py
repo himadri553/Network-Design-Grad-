@@ -3,12 +3,29 @@
 
     plotter.py
         - Script to create all plots
-        - Plot log format
-            [PLOT] time, sc:1, error_rate:0.5
 
-    Outline:
-        
+    Plot log format
+        Every line: [PLOT] <unix_time>, <key>:<value>, ...
+        A `chart:` tag separates the three datasets in one output_log.txt.
+        One line per individual run; the plotter averages the runs per point.
 
+    +---------+---------------------------------------------------------------+---------------------------+
+    | Chart   | [PLOT] line fields                                            | Plot (x vs y)             |
+    +---------+---------------------------------------------------------------+---------------------------+
+    | Chart 1 | chart:1, sc:<1-5>, error_rate:<0.0-0.95>, duration:<sec>      | rate % vs avg time,       |
+    |         |                                                               | 5 lines (Option 1-5)      |
+    +---------+---------------------------------------------------------------+---------------------------+
+    | Chart 2 | chart:2, sc:5, N:<1|2|5|10|20|50>, error_rate:0.10, dur:<sec> | window size vs avg time,  |
+    |         |                                                               | Option 5 @ fixed 10% loss |
+    +---------+---------------------------------------------------------------+---------------------------+
+    | Chart 3 | chart:3, phase:<1-4>, error_rate:0.10, duration:<sec>         | phase vs avg time,        |
+    |         |                                                               | same image @ fixed 10%    |
+    +---------+---------------------------------------------------------------+---------------------------+
+
+    Examples
+        [PLOT] 1718412345.91, chart:1, sc:3, error_rate:0.25, duration:4.8210
+        [PLOT] 1718412390.02, chart:2, sc:5, N:20, error_rate:0.10, duration:3.1147
+        [PLOT] 1718412501.55, chart:3, phase:2, error_rate:0.10, duration:12.4400
 """
 import os
 import re
@@ -62,7 +79,7 @@ def parse_plot_logs(tags):
 
     return results
 
-def generic_plot(x_data, y_data, title, x_title, y_title, *args):
+def generic_line_plot(x_data, y_data, title, x_title, y_title, *args):
     # args: additional (x_data, y_data, label) tuples for extra lines
     plt.figure()
     plt.plot(x_data, y_data)
@@ -75,8 +92,11 @@ def generic_plot(x_data, y_data, title, x_title, y_title, *args):
     plt.legend()
     plt.tight_layout()
 
-def generate_scenario_plot():
-    ''' generates the plot corresponding with each scenario '''
+def generate_chart1():
+    '''
+    Chart 1: Error Rate (x-axis) over Average completion time (y-axis)
+    Plot line expected: [PLOT] <time>, chart:1, sc:<1-5>, error_rate:<0.0-0.95>, duration:<sec>
+    '''
     data = parse_plot_logs(['sc', 'error_rate', 'duration'])
 
     scenario_configs = {
@@ -102,13 +122,68 @@ def generate_scenario_plot():
         x_data = [r for r in rates if r in buckets]
         y_data = [sum(buckets[r]) / len(buckets[r]) for r in x_data]
 
-        generic_plot(x_data, y_data, f"RDT 3.0 - {label}", "Error Rate (%)", "Avg Completion Time (s)")
-        plt.savefig(os.path.join(save_path, 'completion_time.png'))
+        generic_line_plot(x_data, y_data, f"Go-Back-N protocol - {label}", "Error Rate (%)", "Avg Completion Time (s)")
+        plt.savefig(helper.plot_path_chart1, 'Chart_1.png')
         plt.close()
 
-def generate_combined_plot():
-    ''' called after all scenarios are finished '''
-    pass
+def generate_chart2():
+    '''
+    Chart 2: Window Sizes (x-axis) over Average completion time (y-axis)
+    Plot line expected: [PLOT] 1718412390.02, chart:2, sc:5, N:20, error_rate:0.10, duration:3.1147
+    '''
+    # N is the discriminating tag for chart:2 lines (chart:1/3 lines don't carry it)
+    data = parse_plot_logs(['N', 'duration'])
+
+    # Group durations by window size
+    buckets = {}
+    for d in data:
+        buckets.setdefault(d['N'], []).append(d['duration'])
+
+    # Build x and y aligned to the window_sizes list, averaging each bucket
+    x_data = [w for w in helper.window_sizes if w in buckets]
+    y_data = [sum(buckets[w]) / len(buckets[w]) for w in x_data]
+
+    # x-axis is window size here, so set ticks to window_sizes (not rates)
+    plt.figure()
+    plt.plot(x_data, y_data, marker='o')
+    plt.title("Go-Back-N protocol - Chart 2 (Window Size, 10% loss)")
+    plt.xlabel("Window Size (N)")
+    plt.ylabel("Avg Completion Time (s)")
+    plt.xticks(helper.window_sizes)
+    plt.tight_layout()
+    plt.savefig(os.path.join(helper.plot_path_chart2, 'Chart_2.png'))
+    plt.close()
+
+def generate_chart3():
+    '''
+    Chart 3 (Bar graph): Phase (x-axis) over Average completion time (y-axis)
+    Plot line expected: [PLOT] <time>, chart:3, phase:<1-4>, error_rate:0.10, duration:<sec>
+    '''
+    # phase is the discriminating tag for chart:3 lines (chart:1/2 lines don't carry it)
+    data = parse_plot_logs(['phase', 'duration'])
+
+    # Group durations by phase number
+    buckets = {}
+    for d in data:
+        buckets.setdefault(d['phase'], []).append(d['duration'])
+
+    # Build x and y aligned to phases 1-4, averaging each bucket
+    phases = [p for p in [1, 2, 3, 4] if p in buckets]
+    x_labels = [f"Phase {p}" for p in phases]
+    y_data = [sum(buckets[p]) / len(buckets[p]) for p in phases]
+
+    # Bar graph: phase on x-axis (categorical), avg completion time on y-axis
+    plt.figure()
+    plt.bar(x_labels, y_data)
+    plt.title("Go-Back-N protocol - Chart 3 (Phase comparison, 10% loss)")
+    plt.xlabel("Phase")
+    plt.ylabel("Avg Completion Time (s)")
+    plt.tight_layout()
+    plt.savefig(os.path.join(helper.plot_path_chart3, 'Chart_3.png'))
+    plt.close()
 
 def run_plotter():
+    '''
+    Creates all plots after required scenarios are complete 
+    '''
     pass

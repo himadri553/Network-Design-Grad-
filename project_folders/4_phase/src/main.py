@@ -25,11 +25,11 @@ import helper
 import plotter
 
 """ Scenario Thread functions """
-def run1():
+def run1(window_size=10):
     # Run Scenario 1 - No bit-error
     helper.main_log_print("Starting Scenario 1")
-    tx = sender(helper.N)
-    rx = receiver(helper.N)
+    tx = sender(window_size)
+    rx = receiver(window_size)
     tx_thread = threading.Thread(target=tx.run_tx_sc1)
     rx_thread = threading.Thread(target=rx.run_rx_sc1)
     rx_thread.start()
@@ -40,15 +40,17 @@ def run1():
     tx_thread.join()
     duration = time.time() - start
     helper.main_log_print(f"[PLOT] {time.time()}, sc:1, error_rate:0.0, duration:{duration:.4f}")
+    helper.main_log_print(f"[PLOT] {time.time()}, chart:2, N:{window_size}, duration:{duration:.4f}")
+    helper.main_log_print(f"[PLOT] {time.time()}, chart:3, phase:4, duration:{duration:.4f}")
     rx.rx_socket.close()
     tx.sender_socket.close()
     time.sleep(0.5)
 
-def run2(error_rate=0.0):
+def run2(error_rate=0.0, window_size=10):
     # Run Scenario 2 - Ack packet bit-error
     helper.main_log_print("Starting Scenario 2")
-    tx2 = sender(helper.N)
-    rx2 = receiver(helper.N)
+    tx2 = sender(window_size)
+    rx2 = receiver(window_size)
     tx_thread = threading.Thread(target=tx2.run_tx_sc2, args=(error_rate,))
     rx_thread = threading.Thread(target=rx2.run_rx_sc2)
     rx_thread.start()
@@ -63,11 +65,11 @@ def run2(error_rate=0.0):
     tx2.sender_socket.close()
     time.sleep(0.5)
 
-def run3(error_rate=0.0):
+def run3(error_rate=0.0, window_size=10):
     # Run Scenario 3 - Data packet bit-error
     helper.main_log_print("Starting Scenario 3 ")
-    tx3 = sender(helper.N)
-    rx3 = receiver(helper.N)
+    tx3 = sender(window_size)
+    rx3 = receiver(window_size)
     tx_thread = threading.Thread(target=tx3.run_tx_sc3)
     rx_thread = threading.Thread(target=rx3.run_rx_sc3, args=(error_rate,))
     rx_thread.start()
@@ -82,11 +84,11 @@ def run3(error_rate=0.0):
     tx3.sender_socket.close()
     time.sleep(0.5)
 
-def run4(error_rate=0.0):
+def run4(error_rate=0.0, window_size=10):
     # Run Scenario 4 
     helper.main_log_print("Starting Scenario 4 ")
-    tx4 = sender(helper.N)
-    rx4 = receiver(helper.N)
+    tx4 = sender(window_size)
+    rx4 = receiver(window_size)
     tx_thread = threading.Thread(target=tx4.run_tx_sc4, args=(error_rate,))
     rx_thread = threading.Thread(target=rx4.run_rx_sc4)
     rx_thread.start()
@@ -101,11 +103,11 @@ def run4(error_rate=0.0):
     tx4.sender_socket.close()
     time.sleep(0.5)
 
-def run5(error_rate=0.0):
+def run5(error_rate=0.0, window_size=10):
     # Run Scenario 5 - Data packet loss
     helper.main_log_print("Starting Scenario 5")
-    tx5 = sender(helper.N)
-    rx5 = receiver(helper.N)
+    tx5 = sender(window_size)
+    rx5 = receiver(window_size)
     tx_thread = threading.Thread(target=tx5.run_tx_sc5)
     rx_thread = threading.Thread(target=rx5.run_rx_sc5, args=(error_rate,))
     rx_thread.start()
@@ -118,6 +120,46 @@ def run5(error_rate=0.0):
     helper.main_log_print(f"[PLOT] {time.time()}, sc:5, error_rate:{error_rate}, duration:{duration:.4f}")
     rx5.rx_socket.close()
     tx5.sender_socket.close()
+    time.sleep(0.5)
+
+def run_scenario(scenario, error_rate=0.0, window_size=10):
+    # Combined runner for Scenarios 1-5 (same structure as run1-run5 above).
+    # error_rate is applied on the tx/ACK side for Options 2 & 4, on the rx/DATA
+    # side for Options 3 & 5, and ignored for Option 1.
+    helper.main_log_print(f"Starting Scenario {scenario}")
+    tx = sender(window_size)
+    rx = receiver(window_size)
+
+    # Per-scenario tx/rx runner + which side receives error_rate
+    tx_runners = {
+        1: (tx.run_tx_sc1, ()),
+        2: (tx.run_tx_sc2, (error_rate,)),
+        3: (tx.run_tx_sc3, ()),
+        4: (tx.run_tx_sc4, (error_rate,)),
+        5: (tx.run_tx_sc5, ()),
+    }
+    rx_runners = {
+        1: (rx.run_rx_sc1, ()),
+        2: (rx.run_rx_sc2, ()),
+        3: (rx.run_rx_sc3, (error_rate,)),
+        4: (rx.run_rx_sc4, ()),
+        5: (rx.run_rx_sc5, (error_rate,)),
+    }
+    tx_target, tx_args = tx_runners[scenario]
+    rx_target, rx_args = rx_runners[scenario]
+
+    tx_thread = threading.Thread(target=tx_target, args=tx_args)
+    rx_thread = threading.Thread(target=rx_target, args=rx_args)
+    rx_thread.start()
+    time.sleep(0.5)
+    start = time.time()
+    tx_thread.start()
+    rx_thread.join()
+    tx_thread.join()
+    duration = time.time() - start
+    helper.main_log_print(f"[PLOT] {time.time()}, sc:{scenario}, error_rate:{error_rate}, duration:{duration:.4f}")
+    rx.rx_socket.close()
+    tx.sender_socket.close()
     time.sleep(0.5)
 
 def run_recovery_demo():
@@ -146,37 +188,44 @@ def main():
 
     # Prompt the user to select scenario
     while True:
-        user_input = input("Enter the scenario number: ")
+        user_input = input("Enter the scenario number or run_all: ")
         match user_input:
+            case "run_all":
+                for error_rates in rates:
+                    run1()
+                    run2(error_rates)
+                    run3(error_rates)
+                    run4(error_rates)
+                    run5(error_rates)
+                plotter.run_plotter()
+                break
             case "1":
                 run1()
-                plotter.generate_scenario_plot()
                 break
             case "2":
                 for error_rate in rates:
                     run2(error_rate)
-                plotter.generate_scenario_plot()
                 break
             case "3":
                 for error_rate in rates:
                     run3(error_rate)
-                plotter.generate_scenario_plot()
                 break
             case "4":
                 for error_rate in rates:
                     run4(error_rate)
-                plotter.generate_scenario_plot()
                 break
             case "5":
                 for error_rate in rates:
                     run5(error_rate)
-                plotter.generate_scenario_plot()
                 break
             case "demo":
                 run_recovery_demo()
                 break
             case "test":
-                run2()
+                run1()
+                break
+            case "plot":
+                plotter.run_plotter()
                 break
             case _: 
                 print("Invalid scenario number, try again")

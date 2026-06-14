@@ -13,31 +13,27 @@ import os
 
 """ Vars """
 # Paths 
-log_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.txt')
-pic_path        = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.JPG')
-output_pic_path = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_pic.JPG')
-plot_path_sc1   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_1')
-plot_path_sc2   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_2')
-plot_path_sc3   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_3')
-plot_path_sc4   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_4')
-plot_path_sc5   = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'scenario_5')
-
-for _p in [plot_path_sc1, plot_path_sc2, plot_path_sc3, plot_path_sc4, plot_path_sc5]:
+log_path            = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_log.txt')
+pic_path            = os.path.join(os.path.dirname(__file__), '..', 'results', 'bos_skyline.JPG')
+output_pic_path     = os.path.join(os.path.dirname(__file__), '..', 'results', 'output_pic.JPG')
+plot_path_test      = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'tests')
+plot_path_chart1    = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'Chart 1')
+plot_path_chart2    = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'Chart 2')
+plot_path_chart3    = os.path.join(os.path.dirname(__file__), '..', 'results', 'plots', 'Chart 3')
+for _p in [plot_path_test, plot_path_chart1, plot_path_chart2, plot_path_chart3]:
     os.makedirs(_p, exist_ok=True)
+
+# Ports
 receiver_name = 'localhost'
 receiver_port = 12000
 buffer_size = 2048
 packet_size = 1024
-
-# Go-Back-N default window size (baseline for Chart 1 / Chart 3)
-N = 10
 
 # Logging verbosity flag - set to False to silence [SENDER]/[RECEIVER] logs during timing runs
 verbose_packet_logs = False
 scenario_timeout = 120
 
 # Window stuff (phase 4)
-N = 10
 window_sizes = [1, 2, 5, 10, 20, 50]
 
 """ Logger function """

@@ -13,14 +13,14 @@ import helper
 import time
 
 class RECEIVER:
-    def __init__(self, N=None):
+    def __init__(self, window_size=10):
         # Self Vars
         self.full_pic = []
         self.expected_seq = 0
 
         # Window size (the basic GBN receiver doesn't buffer out-of-order packets,
-        # but N is accepted for symmetry with the sender / window-size sweep)
-        self.N = N if N is not None else helper.N
+        # but window_size is accepted for symmetry with the sender / window-size sweep)
+        self.window_size = window_size
 
         # Setup sockets 
         self.rx_socket = socket(AF_INET, SOCK_DGRAM)

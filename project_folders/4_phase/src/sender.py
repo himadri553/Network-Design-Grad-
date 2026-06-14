@@ -12,7 +12,7 @@ import helper
 import time
 
 class SENDER:
-    def __init__(self, N=None):
+    def __init__(self, window_size=None):
         # Self vars
         self.all_chunks = []
 
@@ -21,10 +21,10 @@ class SENDER:
         self.poll_interval = 0.5
         self.timer_deadline = None
 
-        # Go-Back-N sender state. base/nextseqnum are absolute chunk indices
+        # Go-Back-window_size sender state. base/nextseqnum are absolute chunk indices
         # (monotonic); the seq byte placed in each packet is index % 256. Because
-        # N <= 50 < 256, (nextseqnum - base) never needs an explicit mod here.
-        self.N = N if N is not None else helper.N
+        # window_size <= 50 < 256, (nextseqnum - base) never needs an explicit mod here.
+        self.window_size = window_size if window_size is not None else helper.window_size
         self.base = 0          # absolute index of oldest unACKed chunk
         self.nextseqnum = 0    # absolute index of next chunk to send
         self.sndpkt = {}       # absolute index -> built packet, currently in flight
@@ -114,7 +114,7 @@ class SENDER:
             return None
 
     def gbn_send_loop(self, ack_transform=None, deadline=None):
-        # Pipelined Go-Back-N send loop (replaces stop-and-wait wait_for_valid_ack).
+        # Pipelined Go-Back-window_size send loop (replaces stop-and-wait wait_for_valid_ack).
         #   ack_transform: optional fn applied to each received ACK before validation
         #                  (per-scenario error/loss injection on the ACK path)
         #   deadline:      wall-clock scenario cap so a run always terminates
@@ -122,7 +122,7 @@ class SENDER:
 
         while self.base < total:
             # --- Send step: fill the window with new packets, back-to-back ---
-            while self.nextseqnum < total and (self.nextseqnum - self.base) < self.N:
+            while self.nextseqnum < total and (self.nextseqnum - self.base) < self.window_size:
                 seq = self.nextseqnum % 256
                 packet = self.create_data_packet(self.all_chunks[self.nextseqnum], seq)
                 self.sndpkt[self.nextseqnum] = packet
@@ -150,7 +150,7 @@ class SENDER:
                         self.start_timer()         # restart for new oldest unACKed
             # Corrupt/lost ACK -> ack_seq is None -> ignore (Lambda), no state change
 
-            # --- Timeout step: Go-Back-N batch retransmit ---
+            # --- Timeout step: Go-Back-window_size batch retransmit ---
             if self.timer_expired():
                 if deadline is not None and time.time() >= deadline:
                     return
