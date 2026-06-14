@@ -1,6 +1,5 @@
 [MAIN] Clearing all output logs
 [MAIN] Starting Scenario 2
-[MAIN] [PLOT] 1781470911.4633467, sc:2, error_rate:0.0, duration:5.1468
-[MAIN] Starting Scenario 2
-[MAIN] [PLOT] 1781470917.6382604, sc:2, error_rate:0.05, duration:5.1724
-[MAIN] Starting Scenario 2
+[MAIN] [PLOT] 1781472129.038829, sc:5, error_rate:0.0, duration:5.1468
+[MAIN] [PLOT] 1781472129.0394244, chart:2, N:1, duration:5.1468
+[MAIN] [PLOT] 1781472129.0398436, chart:3, phase:4, duration:5.1468
