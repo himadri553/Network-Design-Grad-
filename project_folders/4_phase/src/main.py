@@ -10,8 +10,9 @@
     
         
     TODO:
-        - Make it so that plot logs are saved separately, only reset for each run 
+        - Make it so that plot logs are saved separately, only reset for each run
         - Add all plot logs
+        - Figure out chart 3
         - Create all runs and plots
 
 """
@@ -27,10 +28,12 @@ import helper
 import plotter
 
 """ Scenario Thread functions """
-def run_scenario(scenario, error_rate=0.0, window_size=10):
+def run_scenario(scenario, error_rate=0.0, window_size=10, run_index=0):
     # Combined runner for Scenarios 1-5 (same structure as run1-run5 above).
     # error_rate is applied on the tx/ACK side for Options 2 & 4, on the rx/DATA
     # side for Options 3 & 5, and ignored for Option 1.
+    # run_index distinguishes repeated runs of the same config so all are kept
+    # (the plotter averages them) instead of collapsing to one in the plot_log.
     helper.main_log_print(f"Starting Scenario {scenario}")
     tx = sender(window_size)
     rx = receiver(window_size)
@@ -64,10 +67,11 @@ def run_scenario(scenario, error_rate=0.0, window_size=10):
     tx_thread.join()
     duration = time.time() - start
     
-    # Output logs for plotter
-    helper.main_log_print(f"[PLOT] {time.time()}, sc:5, error_rate:{error_rate}, duration:{duration:.4f}")
-    helper.main_log_print(f"[PLOT] {time.time()}, chart:2, N:{window_size}, duration:{duration:.4f}")
-    helper.main_log_print(f"[PLOT] {time.time()}, chart:3, phase:4, duration:{duration:.4f}")
+    # Output log for plotter - one line carrying enough info for all 3 charts:
+    #   Chart 1 reads sc + error_rate + duration
+    #   Chart 2 reads N + duration
+    #   Chart 3 reads phase + duration   (phase 4 = this project)
+    helper.main_log_print(f"[PLOT] {time.time()}, sc:{scenario}, error_rate:{error_rate}, N:{window_size}, phase:4, run:{run_index}, duration:{duration:.4f}")
     
     # Close Threads
     rx.rx_socket.close()
@@ -94,54 +98,48 @@ def main():
     helper.verbose_packet_logs = False
 
     ## Run each scenario 5 times with their corresponding rates
-    rates = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 
+    error_rates = [0.0, 0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 
              0.45, 0.50, 0.55, 0.60, 0.65, 0.70, 0.75, 0.80, 0.85, 0.90, 0.95]
+    window_sizes = [1, 2, 5, 10, 20, 50]
+    scenarios = [1, 2, 3, 4, 5]
     num_runs = 5
 
     # Prompt the user to select scenario
     while True:
-        user_input = input("Enter the scenario number or run_all: ")
+        user_input = input("Enter run_all, test or plot: ")
         match user_input:
             case "run_all":
-                for error_rates in rates:
-                    run1()
-                    run2(error_rates)
-                    run3(error_rates)
-                    run4(error_rates)
-                    run5(error_rates)
-                plotter.run_plotter()
-                break
-            case "1":
-                run1()
-                break
-            case "2":
-                for error_rate in rates:
-                    run2(error_rate)
-                break
-            case "3":
-                for error_rate in rates:
-                    run3(error_rate)
-                break
-            case "4":
-                for error_rate in rates:
-                    run4(error_rate)
-                break
-            case "5":
-                for error_rate in rates:
-                    run5(error_rate)
+                # Chart 1 runs
+                for s in scenarios:
+                    for e_r in error_rates:
+                        for i in range(num_runs):
+                            run_scenario(s, e_r, 10, i)
+
+                # Chart 2 Runs
+                for w in window_sizes:
+                    for i in range(num_runs):
+                        run_scenario(5, 0.10, w, i)
+
+                # Chart 3 runs (needs to import phase runs)
+
                 break
             case "demo":
                 run_recovery_demo()
                 break
             case "test":
-                run_scenario(2, 0.0, 1)
+                for e_r in [0.0, 0.05, 0.10, 0.15, 0.20]:
+                    for s in scenarios:
+                        run_scenario(s, e_r, 10, 1)
                 break
             case "plot":
                 break
             case _: 
                 print("Invalid scenario number, try again")
     
-    # Update plots
+    # Update plot_log and generate plots
+    # Merge this run's [PLOT] lines from output_log into the persistent plot_log:
+    # lines for re-run scenarios are refreshed; all others are left untouched.
+    helper.update_plot_log()
     plotter.run_plotter()
 
     

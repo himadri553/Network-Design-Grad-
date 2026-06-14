@@ -44,7 +44,11 @@ def parse_plot_logs(tags):
     """
     results = []
 
-    with open(helper.log_path, 'r') as f:
+    # Charts are built from the persistent plot_log (output_log is wiped each run)
+    if not os.path.exists(helper.plot_log_path):
+        return results
+
+    with open(helper.plot_log_path, 'r') as f:
         for line in f:
             if '[PLOT]' not in line:
                 continue
@@ -94,45 +98,55 @@ def generic_line_plot(x_data, y_data, title, x_title, y_title, *args):
 
 def generate_chart1():
     '''
-    Chart 1: Error Rate (x-axis) over Average completion time (y-axis)
-    Plot line expected: [PLOT] <time>, chart:1, sc:<1-5>, error_rate:<0.0-0.95>, duration:<sec>
+    Chart 1: Error Rate (x-axis) over Average completion time (y-axis).
+    One figure with 5 lines (Option 1-5). Window size held fixed at the default N=10.
+    Plot line expected: [PLOT] <time>, sc:<1-5>, error_rate:<0.0-0.95>, N:10, ..., duration:<sec>
     '''
-    data = parse_plot_logs(['sc', 'error_rate', 'duration'])
+    data = parse_plot_logs(['sc', 'error_rate', 'N', 'duration'])
+    # Chart 1 fixes the window size at the default (N=10); ignore window-sweep runs
+    data = [d for d in data if d['N'] == 10]
 
-    scenario_configs = {
-        1: ('Option 1 - No errors',      helper.plot_path_sc1),
-        2: ('Option 2 - ACK bit-error',  helper.plot_path_sc2),
-        3: ('Option 3 - Data bit-error', helper.plot_path_sc3),
-        4: ('Option 4 - ACK packet loss', helper.plot_path_sc4),
-        5: ('Option 5 - Data packet loss', helper.plot_path_sc5),
+    option_labels = {
+        1: 'Option 1 - No errors',
+        2: 'Option 2 - ACK bit-error',
+        3: 'Option 3 - Data bit-error',
+        4: 'Option 4 - ACK packet loss',
+        5: 'Option 5 - Data packet loss',
     }
 
-    for sc, (label, save_path) in scenario_configs.items():
+    plt.figure()
+    for sc, label in option_labels.items():
         sc_data = [d for d in data if d['sc'] == sc]
         if not sc_data:
             continue
 
-        # Group durations by rate percentage bucket
+        # Group durations by rate percentage bucket, averaging each (5 runs/point)
         buckets = {}
         for d in sc_data:
             rate_pct = round(d['error_rate'] * 100)
             buckets.setdefault(rate_pct, []).append(d['duration'])
 
-        # Build x and y aligned to the rates list, averaging each bucket
         x_data = [r for r in rates if r in buckets]
         y_data = [sum(buckets[r]) / len(buckets[r]) for r in x_data]
+        plt.plot(x_data, y_data, marker='o', label=label)
 
-        generic_line_plot(x_data, y_data, f"Go-Back-N protocol - {label}", "Error Rate (%)", "Avg Completion Time (s)")
-        plt.savefig(helper.plot_path_chart1, 'Chart_1.png')
-        plt.close()
+    plt.title("Go-Back-N protocol - Chart 1 (Completion time vs Loss/Error rate)")
+    plt.xlabel("Loss/Error Rate (%)")
+    plt.ylabel("Avg Completion Time (s)")
+    plt.xticks(rates, rotation=45)
+    plt.legend()
+    plt.tight_layout()
+    plt.savefig(os.path.join(helper.plot_path_chart1, 'Chart_1.png'))
+    plt.close()
 
 def generate_chart2():
     '''
     Chart 2: Window Sizes (x-axis) over Average completion time (y-axis)
     Plot line expected: [PLOT] 1718412390.02, chart:2, sc:5, N:20, error_rate:0.10, duration:3.1147
     '''
-    # N is the discriminating tag for chart:2 lines (chart:1/3 lines don't carry it)
-    data = parse_plot_logs(['N', 'duration'])
+    # Every line now carries N, so filter to the Chart 2 config: Option 5 @ 10% loss
+    data = parse_plot_logs(['sc', 'error_rate', 'N', 'duration'])
+    data = [d for d in data if d['sc'] == 5 and round(d['error_rate'] * 100) == 10]
 
     # Group durations by window size
     buckets = {}
@@ -159,8 +173,12 @@ def generate_chart3():
     Chart 3 (Bar graph): Phase (x-axis) over Average completion time (y-axis)
     Plot line expected: [PLOT] <time>, chart:3, phase:<1-4>, error_rate:0.10, duration:<sec>
     '''
-    # phase is the discriminating tag for chart:3 lines (chart:1/2 lines don't carry it)
-    data = parse_plot_logs(['phase', 'duration'])
+    # Every line now carries phase:4, so filter to the fixed comparison config:
+    # 10% loss, default window N=10, Option 5 (the Phase 4 representative point).
+    # NOTE: Phases 1-3 are not implemented yet (TODO) - this currently plots Phase 4 only.
+    data = parse_plot_logs(['phase', 'sc', 'error_rate', 'N', 'duration'])
+    data = [d for d in data
+            if round(d['error_rate'] * 100) == 10 and d['N'] == 10 and d['sc'] == 5]
 
     # Group durations by phase number
     buckets = {}
@@ -186,4 +204,7 @@ def run_plotter():
     '''
     Creates all plots after required scenarios are complete 
     '''
+    generate_chart1()
+    generate_chart2()
+    generate_chart3()
     pass
