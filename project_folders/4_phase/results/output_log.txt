@@ -1,13 +1,1 @@
 [MAIN] Clearing all output logs
-[MAIN] Starting Scenario 5
-[MAIN] [PLOT] 1781664636.1289415, sc:5, error_rate:0.1, N:1, phase:4, run:1, duration:122.8680
-[MAIN] Starting Scenario 5
-[MAIN] [PLOT] 1781664760.0022748, sc:5, error_rate:0.1, N:2, phase:4, run:1, duration:122.8703
-[MAIN] Starting Scenario 5
-[MAIN] [PLOT] 1781664884.0352945, sc:5, error_rate:0.1, N:5, phase:4, run:1, duration:123.0306
-[MAIN] Starting Scenario 5
-[MAIN] [PLOT] 1781665008.22808, sc:5, error_rate:0.1, N:10, phase:4, run:1, duration:123.1906
-[MAIN] Starting Scenario 5
-[MAIN] [PLOT] 1781665132.7262473, sc:5, error_rate:0.1, N:20, phase:4, run:1, duration:123.4960
-[MAIN] Starting Scenario 5
-[MAIN] [PLOT] 1781665258.2193177, sc:5, error_rate:0.1, N:50, phase:4, run:1, duration:124.4912

@@ -173,12 +173,20 @@ def generate_chart3():
     Chart 3 (Bar graph): Phase (x-axis) over Average completion time (y-axis)
     Plot line expected: [PLOT] <time>, chart:3, phase:<1-4>, error_rate:0.10, duration:<sec>
     '''
-    # Every line now carries phase:4, so filter to the fixed comparison config:
-    # 10% loss, default window N=10, Option 5 (the Phase 4 representative point).
-    # NOTE: Phases 1-3 are not implemented yet (TODO) - this currently plots Phase 4 only.
-    data = parse_plot_logs(['phase', 'sc', 'error_rate', 'N', 'duration'])
-    data = [d for d in data
-            if round(d['error_rate'] * 100) == 10 and d['N'] == 10 and d['sc'] == 5]
+    # Chart 3 compares one representative point per phase at the fixed 10% impairment.
+    # Phase 4's log holds MANY lines at 10% (Chart 1's sc 1-5 and Chart 2's N sweep),
+    # so its representative point must still be pinned to Option 5 @ N=10.
+    phase4 = parse_plot_logs(['phase', 'sc', 'error_rate', 'N', 'duration'])
+    phase4 = [d for d in phase4 if d['phase'] == 4
+              and round(d['error_rate'] * 100) == 10 and d['N'] == 10 and d['sc'] == 5]
+
+    # Earlier phases implemented different protocols and logged different sc/N fields,
+    # so their only common identity is phase + error_rate + duration. Each contributes
+    # a single 10% point, so matching on phase + error_rate alone is unambiguous.
+    legacy = parse_plot_logs(['phase', 'error_rate', 'duration'])
+    legacy = [d for d in legacy if d['phase'] != 4 and round(d['error_rate'] * 100) == 10]
+
+    data = phase4 + legacy
 
     # Group durations by phase number
     buckets = {}

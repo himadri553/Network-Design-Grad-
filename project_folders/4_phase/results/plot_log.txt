@@ -261,3 +261,6 @@
 [MAIN] [PLOT] 1781665008.22808, sc:5, error_rate:0.1, N:10, phase:4, run:1, duration:123.1906
 [MAIN] [PLOT] 1781665132.7262473, sc:5, error_rate:0.1, N:20, phase:4, run:1, duration:123.4960
 [MAIN] [PLOT] 1781665258.2193177, sc:5, error_rate:0.1, N:50, phase:4, run:1, duration:124.4912
+[PLOT] 1780836206.0, chart:3, phase:2, error_rate:0.10, duration:113.1854
+[PLOT] 1780964403.0, chart:3, phase:3, error_rate:0.10, duration:123.2481
+[PLOT] <time>, chart:3, phase:1, error_rate:0.10, duration:<your phase-1 10% number>
