@@ -10,8 +10,7 @@
     
         
     TODO:
-        - Make it so that plot logs are saved separately, only reset for each run
-        - Add all plot logs
+        - complete all of chart 1 and 2 runs 
         - Figure out chart 3
         - Create all runs and plots
 
@@ -22,6 +21,8 @@ import threading
 from socket import *
 import time
 import os
+import sys
+import subprocess
 from sender import SENDER as sender
 from receiver import RECEIVER as receiver
 import helper
