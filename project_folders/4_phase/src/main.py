@@ -10,7 +10,8 @@
     
         
     TODO:
-        - complete all of chart 1 and 2 runs 
+        - complete all chart 2 runs 
+            - fix, its not starting
         - Figure out chart 3
         - Create all runs and plots
 
@@ -115,7 +116,7 @@ def main():
                     for e_r in error_rates:
                         for i in range(num_runs):
                             run_scenario(s, e_r, 10, i)
-
+                
                 # Chart 2 Runs
                 for w in window_sizes:
                     for i in range(num_runs):
@@ -124,6 +125,25 @@ def main():
                 # Chart 3 runs (needs to import phase runs)
 
                 break
+            
+            case "run_chart1":
+                # Chart 1 runs
+                for s in scenarios:
+                    for e_r in error_rates:
+                        for i in range(num_runs):
+                            run_scenario(s, e_r, 10, i) 
+                break
+
+            case "run_chart2":
+                # Chart 2 Runs
+                for w in window_sizes:
+                    for i in range(num_runs):
+                        run_scenario(5, 0.10, w, i)
+                break
+
+            case "run_chart3":
+                break
+            
             case "demo":
                 run_recovery_demo()
                 break
