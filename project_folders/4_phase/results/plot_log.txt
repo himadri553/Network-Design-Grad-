@@ -5,7 +5,6 @@
 [MAIN] [PLOT] 1781477126.2933898, sc:4, error_rate:0.05, N:10, phase:4, run:1, duration:5.1858
 [MAIN] [PLOT] 1781477248.9631743, sc:5, error_rate:0.05, N:10, phase:4, run:1, duration:121.6677
 [MAIN] [PLOT] 1781477390.2999313, sc:4, error_rate:0.1, N:10, phase:4, run:1, duration:5.1861
-[MAIN] [PLOT] 1781477512.9697318, sc:5, error_rate:0.1, N:10, phase:4, run:1, duration:121.6682
 [MAIN] [PLOT] 1781477654.3311074, sc:4, error_rate:0.15, N:10, phase:4, run:1, duration:5.1964
 [MAIN] [PLOT] 1781477777.094471, sc:5, error_rate:0.15, N:10, phase:4, run:1, duration:121.7618
 [MAIN] [PLOT] 1781478034.7340684, sc:4, error_rate:0.2, N:10, phase:4, run:1, duration:121.5025
@@ -248,3 +247,17 @@
 [MAIN] [PLOT] 1781490542.9189017, sc:3, error_rate:0.35, N:10, phase:4, run:0, duration:122.8494
 [MAIN] [PLOT] 1781490666.69859, sc:3, error_rate:0.35, N:10, phase:4, run:1, duration:122.7773
 [MAIN] [PLOT] 1781490790.87151, sc:3, error_rate:0.35, N:10, phase:4, run:2, duration:123.1705
+[MAIN] [PLOT] 1781662309.8878307, sc:5, error_rate:0.1, N:1, phase:4, run:0, duration:121.8487
+[MAIN] [PLOT] 1781662554.6866932, sc:5, error_rate:0.1, N:1, phase:4, run:2, duration:121.4772
+[MAIN] [PLOT] 1781662677.4218974, sc:5, error_rate:0.1, N:1, phase:4, run:3, duration:121.7333
+[MAIN] [PLOT] 1781662799.8812249, sc:5, error_rate:0.1, N:1, phase:4, run:4, duration:121.4561
+[MAIN] [PLOT] 1781662922.7863538, sc:5, error_rate:0.1, N:2, phase:4, run:0, duration:121.9027
+[MAIN] [PLOT] 1781663168.6388223, sc:5, error_rate:0.1, N:2, phase:4, run:2, duration:121.9604
+[MAIN] [PLOT] 1781663291.1785371, sc:5, error_rate:0.1, N:2, phase:4, run:3, duration:121.5377
+[MAIN] [PLOT] 1781663414.0179217, sc:5, error_rate:0.1, N:2, phase:4, run:4, duration:121.8372
+[MAIN] [PLOT] 1781664636.1289415, sc:5, error_rate:0.1, N:1, phase:4, run:1, duration:122.8680
+[MAIN] [PLOT] 1781664760.0022748, sc:5, error_rate:0.1, N:2, phase:4, run:1, duration:122.8703
+[MAIN] [PLOT] 1781664884.0352945, sc:5, error_rate:0.1, N:5, phase:4, run:1, duration:123.0306
+[MAIN] [PLOT] 1781665008.22808, sc:5, error_rate:0.1, N:10, phase:4, run:1, duration:123.1906
+[MAIN] [PLOT] 1781665132.7262473, sc:5, error_rate:0.1, N:20, phase:4, run:1, duration:123.4960
+[MAIN] [PLOT] 1781665258.2193177, sc:5, error_rate:0.1, N:50, phase:4, run:1, duration:124.4912

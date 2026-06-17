@@ -137,8 +137,7 @@ def main():
             case "run_chart2":
                 # Chart 2 Runs
                 for w in window_sizes:
-                    for i in range(num_runs):
-                        run_scenario(5, 0.10, w, i)
+                    run_scenario(5, 0.10, w, 1)
                 break
 
             case "run_chart3":
