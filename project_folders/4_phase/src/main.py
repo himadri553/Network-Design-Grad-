@@ -10,10 +10,6 @@
     
         
     TODO:
-        - complete all chart 2 runs 
-            - fix, its not starting
-        - Figure out chart 3
-        - Create all runs and plots
 
 """
 
